@@ -123,10 +123,11 @@ class MainActivity : AppCompatActivity() {
             return File(dir, FILE_NAME)
         }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    //갤러리나 카메라에서 찍은 후 콜백
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == GALLERY_IMAGE_REQUEST && resultCode == RESULT_OK) {
-            uploadImage(data.data)
+            uploadImage(data!!.data)
         } else if (requestCode == CAMERA_IMAGE_REQUEST && resultCode == RESULT_OK) {
             val photoUri = FileProvider.getUriForFile(
                 this,
@@ -224,10 +225,6 @@ class MainActivity : AppCompatActivity() {
                 // add the features we want
                 annotateImageRequest.features = object : ArrayList<Feature?>() {
                     init {
-//                Feature labelDetection = new Feature();
-//                labelDetection.setType("LABEL_DETECTION");
-//                labelDetection.setMaxResults(MAX_LABEL_RESULTS);
-//                add(labelDetection);
                         val textDetection = Feature()
                         textDetection.type = "TEXT_DETECTION"
                         textDetection.maxResults = 10
