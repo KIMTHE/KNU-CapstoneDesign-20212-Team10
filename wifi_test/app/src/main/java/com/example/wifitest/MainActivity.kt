@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.net.wifi.SupplicantState
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiNetworkSuggestion
 import androidx.appcompat.app.AppCompatActivity
@@ -12,26 +14,85 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import android.net.wifi.WifiInfo
+import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+
 
 class MainActivity : AppCompatActivity() {
     lateinit var button: Button
-
+    lateinit var wifiname: TextView
     private var lastSuggestedNetwork: WifiNetworkSuggestion? = null
     var wifiManager: WifiManager? = null
+
+    companion object {
+        const val PERMISSION_CODE_ACCEPTED = 1
+        const val PERMISSION_CODE_NOT_AVAILABLE = 0
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+
+        wifiname = findViewById(R.id.wifiname)
+
+        when(requestLocationPermission()){
+            MainActivity.PERMISSION_CODE_ACCEPTED -> getWifiSSID()
+        }
+
         button = findViewById(R.id.connect)
         button.setOnClickListener(View.OnClickListener {
             wifiManager!!.disconnect()
             connectUsingNetworkSuggestion(ssid = "와이파이 아이디", password = "와이파이 비밀번호")
             wifiManager!!.reconnect()
+            when(requestLocationPermission()){
+                MainActivity.PERMISSION_CODE_ACCEPTED -> getWifiSSID()
+            }
         })
     }
 
+    /*권한 요청*/
+    fun requestLocationPermission(): Int {
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+            } else {
+                // request permission
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                    MainActivity.PERMISSION_CODE_ACCEPTED)
+            }
+        } else {
+            // already granted
+            return MainActivity.PERMISSION_CODE_ACCEPTED
+        }
+
+        // not available
+        return MainActivity.PERMISSION_CODE_NOT_AVAILABLE
+    }
+
+    /*와이파이 이름을 얻기 위한 부분*/
+    fun getWifiSSID() {
+        val mWifiManager: WifiManager = (this.getApplicationContext().getSystemService(Context.WIFI_SERVICE) as WifiManager)!!
+        val info: WifiInfo = mWifiManager.getConnectionInfo()
+
+        if (info.getSupplicantState() === SupplicantState.COMPLETED) {
+            val ssid: String = info.getSSID()
+            wifiname.setText(ssid)
+            Log.d("wifi name", ssid)
+        } else {
+            Log.d("wifi name", "could not obtain the wifi name")
+        }
+    }
+
+    /*와이파이 연결을 위한 부분*/
     private fun connectUsingNetworkSuggestion(ssid: String, password: String) {
         val wifiNetworkSuggestion = WifiNetworkSuggestion.Builder()
             .setSsid(ssid)
