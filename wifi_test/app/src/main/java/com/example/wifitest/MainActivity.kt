@@ -19,6 +19,7 @@ import android.os.Handler
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import kotlin.concurrent.timer
 
 
 class MainActivity : AppCompatActivity() {
@@ -41,21 +42,20 @@ class MainActivity : AppCompatActivity() {
         wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
 
         wifiname = findViewById(R.id.wifiname)
-
-        when (requestLocationPermission()) {
-            MainActivity.PERMISSION_CODE_ACCEPTED -> getWifiSSID()
-        }
-
-
         button = findViewById(R.id.connect)
-        button.setOnClickListener(View.OnClickListener {
-            wifiManager!!.disconnect()
-            connectUsingNetworkSuggestion(ssid = "와이파이 아이디", password = "와이파이 비밀번호")
-            wifiManager!!.reconnect()
-            when(requestLocationPermission()){
-                MainActivity.PERMISSION_CODE_ACCEPTED -> getWifiSSID()
+
+        timer(period = 1000) {
+            runOnUiThread {
+                when (requestLocationPermission()) {
+                    MainActivity.PERMISSION_CODE_ACCEPTED -> getWifiSSID()
+                }
             }
-        })
+            button.setOnClickListener(View.OnClickListener {
+                wifiManager!!.disconnect()
+                connectUsingNetworkSuggestion(ssid = "와이파이 아이디", password = "와이파이 비밀번호")
+                wifiManager!!.reconnect()
+            })
+        }
     }
 
     /*권한 요청*/
@@ -71,9 +71,7 @@ class MainActivity : AppCompatActivity() {
                 ActivityCompat.requestPermissions(this,
                     arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
                     MainActivity.PERMISSION_CODE_ACCEPTED)
-                when (requestLocationPermission()) {
-                    MainActivity.PERMISSION_CODE_ACCEPTED -> getWifiSSID()
-                }
+
             }
         } else {
             // already granted
