@@ -43,6 +43,9 @@ class MainActivity : AppCompatActivity() {
         when(requestLocationPermission()){
             MainActivity.PERMISSION_CODE_ACCEPTED -> getWifiSSID()
         }
+        when(requestLocationPermission()){
+            MainActivity.PERMISSION_CODE_ACCEPTED -> getWifiSSID()
+        }
 
         button = findViewById(R.id.connect)
         button.setOnClickListener(View.OnClickListener {
