@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         wifiname = findViewById(R.id.wifiname)
         button = findViewById(R.id.connect)
+        getWifiSSID()
 
         timer(period = 1000) {
             runOnUiThread {
@@ -89,8 +90,13 @@ class MainActivity : AppCompatActivity() {
 
         if (info.getSupplicantState() === SupplicantState.COMPLETED) {
             val ssid: String = info.getSSID()
-            wifiname.setText(ssid)
-            Log.d("wifi name", ssid)
+            if(ssid == "<unknown ssid>"){
+                wifiname.setText("연결안됨")
+            }
+            else {
+                wifiname.setText(ssid)
+                Log.d("wifi name", ssid)
+            }
         } else {
             Log.d("wifi name", "could not obtain the wifi name")
         }
