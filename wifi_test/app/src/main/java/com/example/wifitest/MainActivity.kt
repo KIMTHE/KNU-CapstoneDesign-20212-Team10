@@ -15,6 +15,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import android.net.wifi.WifiInfo
+import android.os.Handler
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var wifiname: TextView
     private var lastSuggestedNetwork: WifiNetworkSuggestion? = null
     var wifiManager: WifiManager? = null
+
 
     companion object {
         const val PERMISSION_CODE_ACCEPTED = 1
@@ -40,12 +42,10 @@ class MainActivity : AppCompatActivity() {
 
         wifiname = findViewById(R.id.wifiname)
 
-        when(requestLocationPermission()){
+        when (requestLocationPermission()) {
             MainActivity.PERMISSION_CODE_ACCEPTED -> getWifiSSID()
         }
-        when(requestLocationPermission()){
-            MainActivity.PERMISSION_CODE_ACCEPTED -> getWifiSSID()
-        }
+
 
         button = findViewById(R.id.connect)
         button.setOnClickListener(View.OnClickListener {
@@ -71,6 +71,9 @@ class MainActivity : AppCompatActivity() {
                 ActivityCompat.requestPermissions(this,
                     arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
                     MainActivity.PERMISSION_CODE_ACCEPTED)
+                when (requestLocationPermission()) {
+                    MainActivity.PERMISSION_CODE_ACCEPTED -> getWifiSSID()
+                }
             }
         } else {
             // already granted
