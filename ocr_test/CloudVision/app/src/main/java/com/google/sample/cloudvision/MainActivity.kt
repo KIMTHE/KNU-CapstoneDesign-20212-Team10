@@ -64,8 +64,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        //////////////////////////////////////////////////////////////////////////////////////////
         setContentView(R.layout.activity_init)
         val camera_button = findViewById<ImageButton>(R.id.camera_button)
 
@@ -79,24 +77,6 @@ class MainActivity : AppCompatActivity() {
         }
         mImageDetails = findViewById(R.id.wifi_unconnected)
         mMainImage = findViewById(R.id.imageView)
-        //////////////////////////////////////////////////////////////////////////////////////////
-
-        /*setContentView(R.layout.activity_main)
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        val fab = findViewById<FloatingActionButton>(R.id.fab)
-        fab.setOnClickListener {
-            val builder = AlertDialog.Builder(this@MainActivity)
-            builder
-                .setMessage(R.string.dialog_select_prompt)
-                .setPositiveButton(R.string.dialog_select_gallery) { dialog: DialogInterface?, which: Int -> startGalleryChooser() }
-                .setNegativeButton(R.string.dialog_select_camera) { dialog: DialogInterface?, which: Int -> startCamera() }
-            builder.create().show()
-        }
-        mImageDetails = findViewById(R.id.image_details)
-        mMainImage = findViewById(R.id.main_image)*/
-
-
     }
 
     //갤러리에서 선택
@@ -148,14 +128,14 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == GALLERY_IMAGE_REQUEST && resultCode == RESULT_OK) {
-            uploadImage(data!!.data)//**********************************************************************************************************************************
+            uploadImage(data!!.data)
         } else if (requestCode == CAMERA_IMAGE_REQUEST && resultCode == RESULT_OK) {
             val photoUri = FileProvider.getUriForFile(
                 this,
                 applicationContext.packageName + ".provider",
                 cameraFile
             )
-            uploadImage(photoUri)//*****************************************************************************************************************************************
+            uploadImage(photoUri)
         }
     }
 
@@ -192,7 +172,7 @@ class MainActivity : AppCompatActivity() {
                     MAX_DIMENSION
                 )
                 callCloudVision(bitmap)
-                mMainImage!!.setImageBitmap(bitmap)//////////////////////////////////////////////////////////////////////////////////////////////////////////
+                mMainImage!!.setImageBitmap(bitmap)
             } catch (e: IOException) {
                 Log.d(TAG, "Image picking failed because " + e.message)
                 Toast.makeText(this, R.string.image_picker_error, Toast.LENGTH_LONG).show()
@@ -289,7 +269,7 @@ class MainActivity : AppCompatActivity() {
         override fun onPostExecute(result: String) {
             val activity = mActivityWeakReference.get()
             if (activity != null && !activity.isFinishing) {
-                val imageDetail = activity.findViewById<TextView>(R.id.wifi_unconnected)////////////////////////////////////////////////////////////////
+                val imageDetail = activity.findViewById<TextView>(R.id.wifi_unconnected)
                 imageDetail.text = result
             }
         }
@@ -298,7 +278,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun callCloudVision(bitmap: Bitmap) {
         // Switch text to loading
-        mImageDetails!!.setText(R.string.loading_message)////////////////////////////////////////////////////////////////////////////////////////
+        mImageDetails!!.setText(R.string.loading_message)
 
         // Do the real work in an async task, because we need to use the network anyway
         try {
