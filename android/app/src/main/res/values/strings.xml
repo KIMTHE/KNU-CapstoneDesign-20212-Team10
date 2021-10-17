@@ -11,4 +11,7 @@
 
     <string name="app_name">jongsip</string>
     <string name = "title">Jong Sip</string>
+
+    <string name="text_not_connect">연결 안됨</string>
+    <string name="text_wifi_connect">현재 접속중인 WIFI : %1$s</string>
 </resources>

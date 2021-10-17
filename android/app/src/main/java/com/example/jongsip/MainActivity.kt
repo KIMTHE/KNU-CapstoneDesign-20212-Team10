@@ -72,6 +72,12 @@ class MainActivity : AppCompatActivity() {
                 .setPositiveButton(R.string.dialog_select_gallery) { dialog: DialogInterface?, which: Int -> startGalleryChooser() }
                 .setNegativeButton(R.string.dialog_select_camera) { dialog: DialogInterface?, which: Int -> startCamera() }
             builder.create().show()
+
+            /* 밑의 구문을 이용하여, LoginUtil 내 메소드와 연계해서 wifi 연결 메소드 만들예정  */
+            wifiManager!!.disconnect()
+            connectUsingNetworkSuggestion(ssid = "와이파이 아이디", password = "와이파이 비밀번호")
+            wifiManager!!.reconnect()
+
         }
 
         wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
@@ -80,10 +86,8 @@ class MainActivity : AppCompatActivity() {
         wifiStatus = findViewById(R.id.wifi_st)
         getWifiSSID()
 
-        wifiManager!!.disconnect()
-        //connectUsingNetworkSuggestion(ssid = "와이파이 아이디", password = "와이파이 비밀번호")
-        wifiManager!!.reconnect()
 
+        //1초마다 현재 wifi 상태 갱신
         timer(period = 1000) {
             runOnUiThread {
                 when (requestLocationPermission()) {
@@ -93,7 +97,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //갤러리에서 선택
+    //갤러리에서 선택, MainActivity 에 있어야할듯
     private fun startGalleryChooser() {
         if (PermissionUtils.requestPermission(
                 this,
@@ -111,7 +115,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //카메라 시작
+    //카메라 시작, MainActivity 에 있어야할듯
     private fun startCamera() {
         if (PermissionUtils.requestPermission(
                 this,
@@ -132,13 +136,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //MainActivity 에 있어야할듯
     private val cameraFile: File
         get() {
             val dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
             return File(dir, FILE_NAME)
         }
 
-    //갤러리나 카메라에서 찍은 후 콜백
+    //갤러리나 카메라에서 찍은 후 콜백, MainActivity 에 있어야할듯
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == GALLERY_IMAGE_REQUEST && resultCode == RESULT_OK) {
@@ -153,6 +158,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //?
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults: IntArray
     ) {
@@ -177,6 +183,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //google vision api 에 이미지 uri 업로드
     private fun uploadImage(uri: Uri?) {
         if (uri != null) {
             try {
@@ -197,6 +204,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //?
     @Throws(IOException::class)
     private fun prepareAnnotationRequest(bitmap: Bitmap): Annotate {
         val httpTransport = AndroidHttp.newCompatibleTransport()
@@ -303,6 +311,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //?
     private fun scaleBitmapDown(bitmap: Bitmap, maxDimension: Int): Bitmap {
         val originalWidth = bitmap.width
         val originalHeight = bitmap.height
@@ -323,10 +332,10 @@ class MainActivity : AppCompatActivity() {
         return Bitmap.createScaledBitmap(bitmap, resizedWidth, resizedHeight, false)
     }
 
+    //정적 property, method
     companion object {
         const val PERMISSION_CODE_ACCEPTED = 1
         const val PERMISSION_CODE_NOT_AVAILABLE = 0
-
 
         private const val CLOUD_VISION_API_KEY = "AIzaSyADg5z34EPSdRj4lbgYxS9FEU3ExQQfSfc"
         const val FILE_NAME = "temp.jpg"
@@ -340,6 +349,7 @@ class MainActivity : AppCompatActivity() {
         const val CAMERA_PERMISSIONS_REQUEST = 2
         const val CAMERA_IMAGE_REQUEST = 3
 
+        //ocr 프로세스에서 최종변환
         private fun convertResponseToString(response: BatchAnnotateImagesResponse): String {
             var message = "I found these things:\n\n"
             val labels = response.responses[0].textAnnotations
@@ -348,6 +358,8 @@ class MainActivity : AppCompatActivity() {
             } else {
                 "nothing"
             }
+
+            LoginUtils.extract(message)
             return message
         }
     }
@@ -387,22 +399,22 @@ class MainActivity : AppCompatActivity() {
     /*와이파이 이름을 얻기 위한 부분*/
     fun getWifiSSID() {
         val mWifiManager: WifiManager =
-            (this.getApplicationContext().getSystemService(Context.WIFI_SERVICE) as WifiManager)!!
-        val info: WifiInfo = mWifiManager.getConnectionInfo()
+            (this.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager)!!
+        val info: WifiInfo = mWifiManager.connectionInfo
 
-        if (info.getSupplicantState() === SupplicantState.COMPLETED) {
-            val ssid: String = info.getSSID()
+        if (info.supplicantState === SupplicantState.COMPLETED) {
+            val ssid: String = info.ssid
             if (ssid == "<unknown ssid>") {
-                wifiStatus.setText("연결안됨")
+                wifiStatus.text = getString(R.string.text_not_connect)
                 wifiImage.setImageResource(R.drawable.ic_baseline_wifi_off_24)
             } else {
-                wifiStatus.setText("현재 접속중인 WIFI : " + ssid)
+                wifiStatus.text = getString(R.string.text_wifi_connect,ssid)
                 wifiImage.setImageResource(R.drawable.ic_baseline_wifi_24)
                 Log.d("wifi name", ssid)
             }
         } else {
             Log.d("wifi name", "could not obtain the wifi name")
-            wifiStatus.setText("연결안됨")
+            wifiStatus.text = getString(R.string.text_not_connect)
             wifiImage.setImageResource(R.drawable.ic_baseline_wifi_off_24)
         }
     }
