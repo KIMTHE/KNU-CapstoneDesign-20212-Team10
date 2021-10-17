@@ -16,16 +16,16 @@
 package com.google.sample.cloudvision
 
 import android.Manifest
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.widget.TextView
 import android.os.Bundle
 import com.google.sample.cloudvision.R
-import android.support.design.widget.FloatingActionButton
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.sample.cloudvision.PermissionUtils
 import com.google.sample.cloudvision.MainActivity
 import android.content.Intent
 import android.provider.MediaStore
-import android.support.v4.content.FileProvider
+import androidx.core.content.FileProvider
 import android.app.Activity
 import android.content.DialogInterface
 import android.graphics.Bitmap
@@ -42,8 +42,8 @@ import com.google.sample.cloudvision.PackageManagerUtils
 import com.google.api.services.vision.v1.Vision
 import android.os.AsyncTask
 import android.os.Environment
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.Toolbar
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.Toolbar
 import android.util.Log
 import android.view.View
 import android.widget.ImageButton
