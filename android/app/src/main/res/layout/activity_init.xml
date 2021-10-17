@@ -38,6 +38,7 @@
         android:layout_margin="10dp">
 
         <ImageView
+            android:id="@+id/wifi_image"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="2"
@@ -58,16 +59,6 @@
         android:layout_height="0dp"
         android:layout_weight="4"
         android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="236dp"
-            android:text="새로고침"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/camera_button"

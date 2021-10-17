@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -21,7 +22,7 @@ import androidx.core.content.ContextCompat
 import kotlin.concurrent.timer
 
 class MainActivity : AppCompatActivity() {
-    lateinit var ref_but: Button
+    lateinit var wifi_image: ImageView
     lateinit var wifi_status: TextView
     private var lastSuggestedNetwork: WifiNetworkSuggestion? = null
     var wifiManager: WifiManager? = null
@@ -39,9 +40,13 @@ class MainActivity : AppCompatActivity() {
 
         wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
 
+        wifi_image = findViewById(R.id.wifi_image)
         wifi_status = findViewById(R.id.wifi_st)
-        ref_but = findViewById(R.id.refresh)
         getWifiSSID()
+
+        wifiManager!!.disconnect()
+        //connectUsingNetworkSuggestion(ssid = "와이파이 아이디", password = "와이파이 비밀번호")
+        wifiManager!!.reconnect()
 
         timer(period = 1000) {
             runOnUiThread {
@@ -49,11 +54,6 @@ class MainActivity : AppCompatActivity() {
                     PERMISSION_CODE_ACCEPTED -> getWifiSSID()
                 }
             }
-            ref_but.setOnClickListener(View.OnClickListener {
-                wifiManager!!.disconnect()
-                //connectUsingNetworkSuggestion(ssid = "와이파이 아이디", password = "와이파이 비밀번호")
-                wifiManager!!.reconnect()
-            })
         }
     }
 
@@ -90,13 +90,17 @@ class MainActivity : AppCompatActivity() {
             val ssid: String = info.getSSID()
             if(ssid == "<unknown ssid>"){
                 wifi_status.setText("연결안됨")
+                wifi_image.setImageResource(R.drawable.ic_baseline_wifi_off_24)
             }
             else {
                 wifi_status.setText("현재 접속중인 WIFI : " + ssid)
+                wifi_image.setImageResource(R.drawable.ic_baseline_wifi_24)
                 Log.d("wifi name", ssid)
             }
         } else {
             Log.d("wifi name", "could not obtain the wifi name")
+            wifi_status.setText("연결안됨")
+            wifi_image.setImageResource(R.drawable.ic_baseline_wifi_off_24)
         }
     }
 
