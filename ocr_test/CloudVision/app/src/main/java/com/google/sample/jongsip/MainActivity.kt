@@ -13,54 +13,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.sample.cloudvision
+package com.google.jongsip
 
 import android.Manifest
-import androidx.appcompat.app.AppCompatActivity
+import android.content.*
 import android.widget.TextView
 import android.os.Bundle
-import com.google.sample.cloudvision.R
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.sample.cloudvision.PermissionUtils
-import com.google.sample.cloudvision.MainActivity
-import android.content.Intent
 import android.provider.MediaStore
-import androidx.core.content.FileProvider
-import android.app.Activity
-import android.content.DialogInterface
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.net.wifi.SupplicantState
+import android.net.wifi.WifiInfo
+import android.net.wifi.WifiManager
+import android.net.wifi.WifiNetworkSuggestion
 import android.widget.Toast
 //import kotlin.Throws
 import com.google.api.services.vision.v1.Vision.Images.Annotate
-import com.google.api.client.http.HttpTransport
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.json.gson.GsonFactory
 import com.google.api.services.vision.v1.VisionRequestInitializer
 import com.google.api.services.vision.v1.VisionRequest
-import com.google.sample.cloudvision.PackageManagerUtils
 import com.google.api.services.vision.v1.Vision
 import android.os.AsyncTask
 import android.os.Environment
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.Toolbar
 import android.util.Log
-import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.json.JsonFactory
 import com.google.api.services.vision.v1.model.*
-import com.google.sample.cloudvision.MainActivity.LableDetectionTask
+import com.google.sample.jongsip.R
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.ArrayList
+import kotlin.concurrent.timer
 
 class MainActivity : AppCompatActivity() {
-    private var mImageDetails: TextView? = null
-    private var mMainImage: ImageView? = null
+    //private var mImageDetails: TextView? = null
+    //private var mMainImage: ImageView? = null
+
+    lateinit var wifi_image: ImageView
+    lateinit var wifi_status: TextView
+    private var lastSuggestedNetwork: WifiNetworkSuggestion? = null
+    var wifiManager: WifiManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,15 +70,34 @@ class MainActivity : AppCompatActivity() {
         val camera_button = findViewById<ImageButton>(R.id.camera_button)
 
         camera_button.setOnClickListener {
-            val builder = AlertDialog.Builder(this@MainActivity)
+            val builder = android.app.AlertDialog.Builder(this@MainActivity)
             builder
                 .setMessage(R.string.dialog_select_prompt)
                 .setPositiveButton(R.string.dialog_select_gallery) { dialog: DialogInterface?, which: Int -> startGalleryChooser() }
                 .setNegativeButton(R.string.dialog_select_camera) { dialog: DialogInterface?, which: Int -> startCamera() }
             builder.create().show()
         }
-        mImageDetails = findViewById(R.id.wifi_unconnected)
-        mMainImage = findViewById(R.id.imageView)
+
+        wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+
+        wifi_image = findViewById(R.id.wifi_image)
+        wifi_status = findViewById(R.id.wifi_st)
+        getWifiSSID()
+
+        wifiManager!!.disconnect()
+        //connectUsingNetworkSuggestion(ssid = "와이파이 아이디", password = "와이파이 비밀번호")
+        wifiManager!!.reconnect()
+
+        //mImageDetails = findViewById(R.id.wifi_unconnected)
+        //mMainImage = findViewById(R.id.wifi_image)
+
+        timer(period = 1000) {
+            runOnUiThread {
+                when (requestLocationPermission()) {
+                    PERMISSION_CODE_ACCEPTED -> getWifiSSID()
+                }
+            }
+        }
     }
 
     //갤러리에서 선택
@@ -172,7 +193,7 @@ class MainActivity : AppCompatActivity() {
                     MAX_DIMENSION
                 )
                 callCloudVision(bitmap)
-                mMainImage!!.setImageBitmap(bitmap)
+                //mMainImage!!.setImageBitmap(bitmap)
             } catch (e: IOException) {
                 Log.d(TAG, "Image picking failed because " + e.message)
                 Toast.makeText(this, R.string.image_picker_error, Toast.LENGTH_LONG).show()
@@ -278,7 +299,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun callCloudVision(bitmap: Bitmap) {
         // Switch text to loading
-        mImageDetails!!.setText(R.string.loading_message)
+        //mImageDetails!!.setText(R.string.loading_message)
 
         // Do the real work in an async task, because we need to use the network anyway
         try {
@@ -314,6 +335,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+        const val PERMISSION_CODE_ACCEPTED = 1
+        const val PERMISSION_CODE_NOT_AVAILABLE = 0
+
+
         private const val CLOUD_VISION_API_KEY = "AIzaSyADg5z34EPSdRj4lbgYxS9FEU3ExQQfSfc"
         const val FILE_NAME = "temp.jpg"
         private const val ANDROID_CERT_HEADER = "X-Android-Cert"
@@ -348,5 +373,97 @@ class MainActivity : AppCompatActivity() {
             }
             return message
         }
+    }
+
+    /*권한 요청*/
+    fun requestLocationPermission(): Int {
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+            } else {
+                // request permission
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                    PERMISSION_CODE_ACCEPTED
+                )
+
+            }
+        } else {
+            // already granted
+            return PERMISSION_CODE_ACCEPTED
+        }
+
+        // not available
+        return PERMISSION_CODE_NOT_AVAILABLE
+    }
+
+    /*와이파이 이름을 얻기 위한 부분*/
+    fun getWifiSSID() {
+        val mWifiManager: WifiManager = (this.getApplicationContext().getSystemService(Context.WIFI_SERVICE) as WifiManager)!!
+        val info: WifiInfo = mWifiManager.getConnectionInfo()
+
+        if (info.getSupplicantState() === SupplicantState.COMPLETED) {
+            val ssid: String = info.getSSID()
+            if(ssid == "<unknown ssid>"){
+                wifi_status.setText("연결안됨")
+                wifi_image.setImageResource(R.drawable.ic_baseline_wifi_off_24)
+            }
+            else {
+                wifi_status.setText("현재 접속중인 WIFI : " + ssid)
+                wifi_image.setImageResource(R.drawable.ic_baseline_wifi_24)
+                Log.d("wifi name", ssid)
+            }
+        } else {
+            Log.d("wifi name", "could not obtain the wifi name")
+            wifi_status.setText("연결안됨")
+            wifi_image.setImageResource(R.drawable.ic_baseline_wifi_off_24)
+        }
+    }
+
+    /*와이파이 연결을 위한 부분*/
+    private fun connectUsingNetworkSuggestion(ssid: String, password: String) {
+        val wifiNetworkSuggestion = WifiNetworkSuggestion.Builder()
+            .setSsid(ssid)
+            .setWpa2Passphrase(password)
+            .build()
+        val intentFilter =
+            IntentFilter(WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION);
+
+        val broadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                if (!intent.action.equals(WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION)) {
+                    return
+                }
+                showToast("Connection Suggestion Succeeded")
+            }
+        }
+
+        registerReceiver(broadcastReceiver, intentFilter)
+
+        lastSuggestedNetwork?.let {
+            val status = wifiManager!!.removeNetworkSuggestions(listOf(it))
+            Log.i("WifiNetworkSuggestion", "Removing Network suggestions status is $status")
+        }
+        val suggestionsList = listOf(wifiNetworkSuggestion)
+
+        var status = wifiManager!!.addNetworkSuggestions(suggestionsList)
+        Log.i("WifiNetworkSuggestion", "Adding Network suggestions status is $status")
+        if (status == WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE) {
+            showToast("Suggestion Update Needed")
+            status = wifiManager!!.removeNetworkSuggestions(suggestionsList)
+            Log.i("WifiNetworkSuggestion", "Removing Network suggestions status is $status")
+            status = wifiManager!!.addNetworkSuggestions(suggestionsList)
+        }
+        if (status == WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
+            lastSuggestedNetwork = wifiNetworkSuggestion
+            showToast("Suggestion Added")
+        }
+    }
+
+    private fun showToast(s: String) {
+        Toast.makeText(applicationContext, s, Toast.LENGTH_LONG).show()
     }
 }

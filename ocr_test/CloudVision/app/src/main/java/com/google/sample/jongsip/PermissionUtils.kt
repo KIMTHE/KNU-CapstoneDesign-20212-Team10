@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.sample.cloudvision
+package com.google.jongsip
 
-import android.app.Activity
 import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
@@ -23,7 +22,7 @@ import java.util.ArrayList
 
 object PermissionUtils {
     fun requestPermission(
-        activity: Activity?, requestCode: Int, vararg permissions: String
+        activity: androidx.appcompat.app.AppCompatActivity?, requestCode: Int, vararg permissions: String
     ): Boolean {
         var granted = true
         val permissionsNeeded = ArrayList<String>()

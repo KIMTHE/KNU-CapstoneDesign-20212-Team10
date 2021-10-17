@@ -1,9 +1,7 @@
-package com.google.sample.cloudvision
+package com.example.jongsip
 
 import android.content.pm.PackageManager
-import android.content.pm.PackageInfo
 import android.content.pm.Signature
-import com.google.sample.cloudvision.PackageManagerUtils
 import com.google.common.io.BaseEncoding
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
