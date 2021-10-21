@@ -28,7 +28,7 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.net.wifi.WifiNetworkSuggestion
 import android.widget.Toast
-//import kotlin.Throws
+import kotlin.Throws
 import com.google.api.services.vision.v1.Vision.Images.Annotate
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.json.gson.GsonFactory
@@ -72,20 +72,12 @@ class MainActivity : AppCompatActivity() {
                 .setPositiveButton(R.string.dialog_select_gallery) { dialog: DialogInterface?, which: Int -> startGalleryChooser() }
                 .setNegativeButton(R.string.dialog_select_camera) { dialog: DialogInterface?, which: Int -> startCamera() }
             builder.create().show()
-
-            /* 밑의 구문을 이용하여, LoginUtil 내 메소드와 연계해서 wifi 연결 메소드 만들예정  */
-            wifiManager!!.disconnect()
-            connectUsingNetworkSuggestion(ssid = "와이파이 아이디", password = "와이파이 비밀번호")
-            wifiManager!!.reconnect()
-
         }
 
         wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
-
         wifiImage = findViewById(R.id.wifi_image)
         wifiStatus = findViewById(R.id.wifi_st)
         getWifiSSID()
-
 
         //1초마다 현재 wifi 상태 갱신
         timer(period = 1000) {
@@ -97,7 +89,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //갤러리에서 선택, MainActivity 에 있어야할듯
+    //갤러리에서 선택
     private fun startGalleryChooser() {
         if (PermissionUtils.requestPermission(
                 this,
@@ -115,7 +107,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //카메라 시작, MainActivity 에 있어야할듯
+    //카메라 시작
     private fun startCamera() {
         if (PermissionUtils.requestPermission(
                 this,
@@ -136,14 +128,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //MainActivity 에 있어야할듯
+    //카메라,갤러리 파일반환
     private val cameraFile: File
         get() {
             val dir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
             return File(dir, FILE_NAME)
         }
 
-    //갤러리나 카메라에서 찍은 후 콜백, MainActivity 에 있어야할듯
+    //갤러리나 카메라에서 찍은 후 콜백
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == GALLERY_IMAGE_REQUEST && resultCode == RESULT_OK) {
@@ -158,7 +150,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //?
+    //권한요청결과 콜백
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults: IntArray
     ) {
@@ -183,12 +175,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //google vision api 에 이미지 uri 업로드
+    //google cloud vision 에 이미지 uri 업로드
     private fun uploadImage(uri: Uri?) {
         if (uri != null) {
             try {
                 // scale the image to save on bandwidth
-                val bitmap = scaleBitmapDown(
+                val bitmap = OCRUtils.scaleBitmapDown(
                     MediaStore.Images.Media.getBitmap(contentResolver, uri),
                     MAX_DIMENSION
                 )
@@ -204,7 +196,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //?
+    //convertResponseToString 메소드를 비동기로 수행함
+    private fun callCloudVision(bitmap: Bitmap) {
+        // Do the real work in an async task, because we need to use the network anyway
+        try {
+            val labelDetectionTask: OCRUtils.LableDetectionTask =
+                OCRUtils.LableDetectionTask(this, prepareAnnotationRequest(bitmap))
+            labelDetectionTask.execute()
+            connectWithOCR()
+        } catch (e: IOException) {
+            Log.d(
+                TAG, "failed to make API request because of other IOException " +
+                        e.message
+            )
+        }
+    }
+
+    //google cloud vision 에 요청준비
     @Throws(IOException::class)
     private fun prepareAnnotationRequest(bitmap: Bitmap): Annotate {
         val httpTransport = AndroidHttp.newCompatibleTransport()
@@ -266,71 +274,6 @@ class MainActivity : AppCompatActivity() {
         return annotateRequest
     }
 
-    private class LableDetectionTask internal constructor(
-        activity: MainActivity,
-        annotate: Annotate
-    ) : AsyncTask<Any?, Void?, String>() {
-        private val mActivityWeakReference: WeakReference<MainActivity> = WeakReference(activity)
-        private val mRequest: Annotate = annotate
-        override fun doInBackground(vararg params: Any?): String? {
-            try {
-                Log.d(TAG, "created Cloud Vision request object, sending request")
-                val response = mRequest.execute()
-                return convertResponseToString(response)
-            } catch (e: GoogleJsonResponseException) {
-                Log.d(TAG, "failed to make API request because " + e.content)
-            } catch (e: IOException) {
-                Log.d(
-                    TAG, "failed to make API request because of other IOException " +
-                            e.message
-                )
-            }
-            return "Cloud Vision API request failed. Check logs for details."
-        }
-
-        override fun onPostExecute(result: String) {
-            val activity = mActivityWeakReference.get()
-        }
-
-    }
-
-    private fun callCloudVision(bitmap: Bitmap) {
-        // Switch text to loading
-        //mImageDetails!!.setText(R.string.loading_message)
-
-        // Do the real work in an async task, because we need to use the network anyway
-        try {
-            val labelDetectionTask: LableDetectionTask =
-                LableDetectionTask(this, prepareAnnotationRequest(bitmap))
-            labelDetectionTask.execute()
-        } catch (e: IOException) {
-            Log.d(
-                TAG, "failed to make API request because of other IOException " +
-                        e.message
-            )
-        }
-    }
-
-    //?
-    private fun scaleBitmapDown(bitmap: Bitmap, maxDimension: Int): Bitmap {
-        val originalWidth = bitmap.width
-        val originalHeight = bitmap.height
-        var resizedWidth = maxDimension
-        var resizedHeight = maxDimension
-        if (originalHeight > originalWidth) {
-            resizedHeight = maxDimension
-            resizedWidth =
-                (resizedHeight * originalWidth.toFloat() / originalHeight.toFloat()).toInt()
-        } else if (originalWidth > originalHeight) {
-            resizedWidth = maxDimension
-            resizedHeight =
-                (resizedWidth * originalHeight.toFloat() / originalWidth.toFloat()).toInt()
-        } else if (originalHeight == originalWidth) {
-            resizedHeight = maxDimension
-            resizedWidth = maxDimension
-        }
-        return Bitmap.createScaledBitmap(bitmap, resizedWidth, resizedHeight, false)
-    }
 
     //정적 property, method
     companion object {
@@ -343,14 +286,14 @@ class MainActivity : AppCompatActivity() {
         private const val ANDROID_PACKAGE_HEADER = "X-Android-Package"
         private const val MAX_LABEL_RESULTS = 10
         private const val MAX_DIMENSION = 1200
-        private val TAG = MainActivity::class.java.simpleName
+        val TAG = MainActivity::class.java.simpleName
         private const val GALLERY_PERMISSIONS_REQUEST = 0
         private const val GALLERY_IMAGE_REQUEST = 1
         const val CAMERA_PERMISSIONS_REQUEST = 2
         const val CAMERA_IMAGE_REQUEST = 3
 
         //ocr 프로세스에서 최종변환
-        private fun convertResponseToString(response: BatchAnnotateImagesResponse): String {
+        fun convertResponseToString(response: BatchAnnotateImagesResponse): String {
             var message = "I found these things:\n\n"
             val labels = response.responses[0].textAnnotations
             message = if (labels != null) {
@@ -360,11 +303,12 @@ class MainActivity : AppCompatActivity() {
             }
 
             LoginUtils.extract(message)
+
             return message
         }
     }
 
-    /*권한 요청*/
+    /*wifi 관련 권한 요청*/
     fun requestLocationPermission(): Int {
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -397,7 +341,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*와이파이 이름을 얻기 위한 부분*/
-    fun getWifiSSID() {
+    fun getWifiSSID(){
         val mWifiManager: WifiManager =
             (this.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager)!!
         val info: WifiInfo = mWifiManager.connectionInfo
@@ -408,7 +352,7 @@ class MainActivity : AppCompatActivity() {
                 wifiStatus.text = getString(R.string.text_not_connect)
                 wifiImage.setImageResource(R.drawable.ic_baseline_wifi_off_24)
             } else {
-                wifiStatus.text = getString(R.string.text_wifi_connect,ssid)
+                wifiStatus.text = getString(R.string.text_wifi_connect, ssid)
                 wifiImage.setImageResource(R.drawable.ic_baseline_wifi_24)
                 Log.d("wifi name", ssid)
             }
@@ -417,10 +361,11 @@ class MainActivity : AppCompatActivity() {
             wifiStatus.text = getString(R.string.text_not_connect)
             wifiImage.setImageResource(R.drawable.ic_baseline_wifi_off_24)
         }
+
     }
 
     /*와이파이 연결을 위한 부분*/
-    private fun connectUsingNetworkSuggestion(ssid: String, password: String) {
+    private fun connectUsingNetworkSuggestion(ssid: String, password: String): Boolean {
         val wifiNetworkSuggestion = WifiNetworkSuggestion.Builder()
             .setSsid(ssid)
             .setWpa2Passphrase(password)
@@ -453,13 +398,35 @@ class MainActivity : AppCompatActivity() {
             Log.i("WifiNetworkSuggestion", "Removing Network suggestions status is $status")
             status = wifiManager!!.addNetworkSuggestions(suggestionsList)
         }
+
+        //연결성공?
         if (status == WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
             lastSuggestedNetwork = wifiNetworkSuggestion
             showToast("Suggestion Added")
+            return true
+        }
+        return false
+    }
+
+    //모든 경우로 로그인 시도
+    private fun connectWithOCR() {
+        var connectResult = false
+
+        if (LoginUtils.idCase.size == 0 || LoginUtils.pwCase.size == 0) showToast(getString(R.string.image_picker_error))
+        else {
+            for (id in LoginUtils.idCase) {
+                for (pw in LoginUtils.pwCase) {
+                    wifiManager!!.disconnect()
+                    connectResult = connectUsingNetworkSuggestion(ssid = id, password = pw)
+                    wifiManager!!.reconnect()
+
+                    if (connectResult) return
+                }
+            }
         }
     }
 
-    private fun showToast(s: String) {
+    fun showToast(s: String) {
         Toast.makeText(applicationContext, s, Toast.LENGTH_LONG).show()
     }
 }

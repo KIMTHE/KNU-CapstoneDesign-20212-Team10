@@ -20,6 +20,7 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import java.util.ArrayList
 
+// 권환 요청관련 util method
 object PermissionUtils {
     fun requestPermission(
         activity: androidx.appcompat.app.AppCompatActivity?, requestCode: Int, vararg permissions: String
@@ -49,7 +50,7 @@ object PermissionUtils {
     fun permissionGranted(
         requestCode: Int, permissionCode: Int, grantResults: IntArray
     ): Boolean {
-        return requestCode == permissionCode && grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+        return requestCode == permissionCode && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
     }
 
 

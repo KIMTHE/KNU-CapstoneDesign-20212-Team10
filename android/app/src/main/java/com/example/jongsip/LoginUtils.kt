@@ -1,7 +1,7 @@
 package com.example.jongsip
 
 object LoginUtils {
-    private val idDiv = arrayListOf("ID", "id", "이름", "아이디")
+    private val idDiv = arrayListOf("ID", "id", "이름", "아이디","wifi","WIFI","와이파이","WiFi")
     private val pwDiv = arrayListOf("PW", "pw", "password", "PASSWORD", "비밀번호", "비번")
     var idCase = arrayListOf<String>()
     var pwCase = arrayListOf<String>()
@@ -68,4 +68,6 @@ object LoginUtils {
 
         cases.add(case)
     }
+
+
 }

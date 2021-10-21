@@ -50,7 +50,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="3"
             android:text=""
-            android:gravity="center" />
+            android:gravity="center"
+            android:textSize="30sp"
+            tools:text="text"/>
 
     </LinearLayout>
 

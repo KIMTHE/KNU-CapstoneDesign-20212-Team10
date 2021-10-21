@@ -13,7 +13,7 @@ import java.security.NoSuchAlgorithmException
 object PackageManagerUtils {
     /**
      * Gets the SHA1 signature, hex encoded for inclusion with Google Cloud Platform API requests
-     *
+    permissionGranted
      * @param packageName Identifies the APK whose signature should be extracted.
      * @return a lowercase, hex-encoded
      */
