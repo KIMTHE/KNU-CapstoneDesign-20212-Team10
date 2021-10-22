@@ -341,9 +341,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*와이파이 이름을 얻기 위한 부분*/
-    fun getWifiSSID(){
+    private fun getWifiSSID() : String?{
         val mWifiManager: WifiManager =
-            (this.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager)!!
+            (this.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager)
         val info: WifiInfo = mWifiManager.connectionInfo
 
         if (info.supplicantState === SupplicantState.COMPLETED) {
@@ -355,17 +355,19 @@ class MainActivity : AppCompatActivity() {
                 wifiStatus.text = getString(R.string.text_wifi_connect, ssid)
                 wifiImage.setImageResource(R.drawable.ic_baseline_wifi_24)
                 Log.d("wifi name", ssid)
+
+                return ssid
             }
         } else {
             Log.d("wifi name", "could not obtain the wifi name")
             wifiStatus.text = getString(R.string.text_not_connect)
             wifiImage.setImageResource(R.drawable.ic_baseline_wifi_off_24)
         }
-
+        return null
     }
 
     /*와이파이 연결을 위한 부분*/
-    private fun connectUsingNetworkSuggestion(ssid: String, password: String): Boolean {
+    private fun connectUsingNetworkSuggestion(ssid: String, password: String) {
         val wifiNetworkSuggestion = WifiNetworkSuggestion.Builder()
             .setSsid(ssid)
             .setWpa2Passphrase(password)
@@ -399,28 +401,25 @@ class MainActivity : AppCompatActivity() {
             status = wifiManager!!.addNetworkSuggestions(suggestionsList)
         }
 
-        //연결성공?
         if (status == WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
             lastSuggestedNetwork = wifiNetworkSuggestion
             showToast("Suggestion Added")
-            return true
         }
-        return false
     }
 
     //모든 경우로 로그인 시도
     private fun connectWithOCR() {
-        var connectResult = false
 
         if (LoginUtils.idCase.size == 0 || LoginUtils.pwCase.size == 0) showToast(getString(R.string.image_picker_error))
         else {
             for (id in LoginUtils.idCase) {
                 for (pw in LoginUtils.pwCase) {
                     wifiManager!!.disconnect()
-                    connectResult = connectUsingNetworkSuggestion(ssid = id, password = pw)
+                    connectUsingNetworkSuggestion(ssid = id, password = pw)
                     wifiManager!!.reconnect()
 
-                    if (connectResult) return
+                    val ssid = getWifiSSID()
+                    if(ssid != null && ssid == id) break
                 }
             }
         }
