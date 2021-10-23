@@ -53,5 +53,36 @@ object PermissionUtils {
         return requestCode == permissionCode && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
     }
 
+    /*wifi 관련 권한 요청*/
+    fun requestLocationPermission(activity: androidx.appcompat.app.AppCompatActivity?): Int {
+        if (ContextCompat.checkSelfPermission(
+                activity!!,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    activity,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION
+                )
+            ) {
+            } else {
+                // request permission
+                ActivityCompat.requestPermissions(
+                    activity,
+                    arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                    MainActivity.PERMISSION_CODE_ACCEPTED
+                )
+
+            }
+        } else {
+            // already granted
+            return MainActivity.PERMISSION_CODE_ACCEPTED
+        }
+
+        // not available
+        return MainActivity.PERMISSION_CODE_NOT_AVAILABLE
+    }
 
 }

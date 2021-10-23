@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
         //1초마다 현재 wifi 상태 갱신
         timer(period = 1000) {
             runOnUiThread {
-                when (requestLocationPermission()) {
+                when (PermissionUtils.requestLocationPermission(this@MainActivity)) {
                     PERMISSION_CODE_ACCEPTED -> getWifiSSID()
                 }
             }
@@ -329,37 +329,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /*wifi 관련 권한 요청*/
-    fun requestLocationPermission(): Int {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            != PackageManager.PERMISSION_GRANTED
-        ) {
 
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    this,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION
-                )
-            ) {
-            } else {
-                // request permission
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                    PERMISSION_CODE_ACCEPTED
-                )
-
-            }
-        } else {
-            // already granted
-            return PERMISSION_CODE_ACCEPTED
-        }
-
-        // not available
-        return PERMISSION_CODE_NOT_AVAILABLE
-    }
 
     /*와이파이 이름을 얻기 위한 부분*/
     private fun getWifiSSID() : String?{
