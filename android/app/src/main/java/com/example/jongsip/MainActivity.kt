@@ -203,7 +203,9 @@ class MainActivity : AppCompatActivity() {
             val labelDetectionTask: OCRUtils.LableDetectionTask =
                 OCRUtils.LableDetectionTask(this, prepareAnnotationRequest(bitmap))
             labelDetectionTask.execute()
-            connectWithOCR()
+
+
+
         } catch (e: IOException) {
             Log.d(
                 TAG, "failed to make API request because of other IOException " +
@@ -306,6 +308,25 @@ class MainActivity : AppCompatActivity() {
 
             return message
         }
+
+        //모든 경우로 로그인 시도
+        fun connectWithOCR(mainActivity: MainActivity) {
+
+            if (LoginUtils.idCase.size == 0 || LoginUtils.pwCase.size == 0)
+                mainActivity.showToast(mainActivity.getString(R.string.image_picker_error))
+            else {
+                for (id in LoginUtils.idCase) {
+                    for (pw in LoginUtils.pwCase) {
+                        mainActivity.wifiManager!!.disconnect()
+                        mainActivity.connectUsingNetworkSuggestion(ssid = id, password = pw)
+                        mainActivity.wifiManager!!.reconnect()
+
+                        val ssid = mainActivity.getWifiSSID()
+                        if(ssid != null && ssid == id) break
+                    }
+                }
+            }
+        }
     }
 
     /*wifi 관련 권한 요청*/
@@ -407,23 +428,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    //모든 경우로 로그인 시도
-    private fun connectWithOCR() {
 
-        if (LoginUtils.idCase.size == 0 || LoginUtils.pwCase.size == 0) showToast(getString(R.string.image_picker_error))
-        else {
-            for (id in LoginUtils.idCase) {
-                for (pw in LoginUtils.pwCase) {
-                    wifiManager!!.disconnect()
-                    connectUsingNetworkSuggestion(ssid = id, password = pw)
-                    wifiManager!!.reconnect()
-
-                    val ssid = getWifiSSID()
-                    if(ssid != null && ssid == id) break
-                }
-            }
-        }
-    }
 
     fun showToast(s: String) {
         Toast.makeText(applicationContext, s, Toast.LENGTH_LONG).show()

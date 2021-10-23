@@ -55,8 +55,12 @@ object OCRUtils {
             return "Cloud Vision API 요청이 실패했습니다. 자세한 내용은 로그를 확인하세요."
         }
 
+        //이 Task에서(즉 이 스레드에서) 수행되던 작업이 종료되었을 때 호출됨
         override fun onPostExecute(result: String) {
             val activity = mActivityWeakReference.get()
+            if (activity != null) {
+                MainActivity.connectWithOCR(activity)
+            }
         }
 
     }
