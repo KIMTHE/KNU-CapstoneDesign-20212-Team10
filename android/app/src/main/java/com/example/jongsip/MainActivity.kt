@@ -67,12 +67,7 @@ class MainActivity : AppCompatActivity() {
         val cameraButton = findViewById<ImageButton>(R.id.camera_button)
 
         cameraButton.setOnClickListener {
-            val builder = android.app.AlertDialog.Builder(this@MainActivity)
-            builder
-                .setMessage(R.string.dialog_select_prompt)
-                .setPositiveButton(R.string.dialog_select_gallery) { dialog: DialogInterface?, which: Int -> startGalleryChooser() }
-                .setNegativeButton(R.string.dialog_select_camera) { dialog: DialogInterface?, which: Int -> startCamera() }
-            builder.create().show()
+            startCamera()
         }
 
         wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
@@ -87,24 +82,6 @@ class MainActivity : AppCompatActivity() {
                     PERMISSION_CODE_ACCEPTED -> getWifiSSID()
                 }
             }
-        }
-    }
-
-    //갤러리에서 선택
-    private fun startGalleryChooser() {
-        if (PermissionUtils.requestPermission(
-                this,
-                GALLERY_PERMISSIONS_REQUEST,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            )
-        ) {
-            val intent = Intent()
-            intent.type = "image/*"
-            intent.action = Intent.ACTION_GET_CONTENT
-            startActivityForResult(
-                Intent.createChooser(intent, "Select a photo"),
-                GALLERY_IMAGE_REQUEST
-            )
         }
     }
 
@@ -164,14 +141,6 @@ class MainActivity : AppCompatActivity() {
                 )
             ) {
                 startCamera()
-            }
-            GALLERY_PERMISSIONS_REQUEST -> if (PermissionUtils.permissionGranted(
-                    requestCode,
-                    GALLERY_PERMISSIONS_REQUEST,
-                    grantResults
-                )
-            ) {
-                startGalleryChooser()
             }
         }
     }
