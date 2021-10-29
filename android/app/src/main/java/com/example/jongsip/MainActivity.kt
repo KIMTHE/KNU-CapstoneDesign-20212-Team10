@@ -372,7 +372,7 @@ class MainActivity : AppCompatActivity() {
                 if (!intent.action.equals(WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION)) {
                     return
                 }
-                showToast("Connection Suggestion Succeeded")
+                showToast("연결중...")
             }
         }
 
@@ -387,7 +387,7 @@ class MainActivity : AppCompatActivity() {
         var status = wifiManager!!.addNetworkSuggestions(suggestionsList)
         Log.i("WifiNetworkSuggestion", "Adding Network suggestions status is $status")
         if (status == WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE) {
-            showToast("Suggestion Update Needed")
+            showToast("이미 등록되있습니다")
             status = wifiManager!!.removeNetworkSuggestions(suggestionsList)
             Log.i("WifiNetworkSuggestion", "Removing Network suggestions status is $status")
             status = wifiManager!!.addNetworkSuggestions(suggestionsList)
@@ -395,7 +395,7 @@ class MainActivity : AppCompatActivity() {
 
         if (status == WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
             lastSuggestedNetwork = wifiNetworkSuggestion
-            showToast("Suggestion Added")
+            showToast("연결성공")
         }
     }
 
