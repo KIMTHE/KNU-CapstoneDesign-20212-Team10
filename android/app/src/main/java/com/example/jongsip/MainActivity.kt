@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity() {
     var wifiManager: WifiManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_Jongsip)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_init)
         val cameraButton = findViewById<ImageButton>(R.id.camera_button)
