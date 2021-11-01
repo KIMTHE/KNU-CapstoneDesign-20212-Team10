@@ -1,4 +1,4 @@
-package com.example.jongsip
+package com.jongsip.cafe
 
 object LoginUtils {
     private val idDiv = arrayListOf("ID", "id", "이름", "아이디","wifi","WIFI","와이파이","WiFi")

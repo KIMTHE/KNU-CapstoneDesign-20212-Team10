@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.jongsip
+package com.jongsip.cafe
 
 import android.Manifest
 import android.content.*
@@ -22,11 +22,8 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.net.Uri
-import android.net.wifi.SupplicantState
-import android.net.wifi.WifiInfo
-import android.net.wifi.WifiManager
-import android.net.wifi.WifiNetworkSuggestion
+import android.net.*
+import android.net.wifi.*
 import android.widget.Toast
 import kotlin.Throws
 import com.google.api.services.vision.v1.Vision.Images.Annotate
@@ -40,10 +37,12 @@ import android.os.Environment
 import android.util.Log
 import android.widget.ImageButton
 import android.widget.ImageView
+import androidx.annotation.NonNull
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import com.example.jongsip.R
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.json.JsonFactory
 import com.google.api.services.vision.v1.model.*
@@ -175,7 +174,6 @@ class MainActivity : AppCompatActivity() {
             labelDetectionTask.execute()
 
 
-
         } catch (e: IOException) {
             Log.d(
                 TAG, "failed to make API request because of other IOException " +
@@ -292,7 +290,7 @@ class MainActivity : AppCompatActivity() {
                         mainActivity.wifiManager!!.reconnect()
 
                         val ssid = mainActivity.getWifiSSID()
-                        if(ssid != null && ssid == id) break
+                        if (ssid != null && ssid == id) break
                     }
                 }
             }
@@ -300,9 +298,8 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     /*와이파이 이름을 얻기 위한 부분*/
-    private fun getWifiSSID() : String?{
+    private fun getWifiSSID(): String? {
         val mWifiManager: WifiManager =
             (this.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager)
         val info: WifiInfo = mWifiManager.connectionInfo
@@ -329,10 +326,12 @@ class MainActivity : AppCompatActivity() {
 
     /*와이파이 연결을 위한 부분*/
     private fun connectUsingNetworkSuggestion(ssid: String, password: String) {
+
         val wifiNetworkSuggestion = WifiNetworkSuggestion.Builder()
             .setSsid(ssid)
             .setWpa2Passphrase(password)
             .build()
+
         val intentFilter =
             IntentFilter(WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION);
 
@@ -367,7 +366,6 @@ class MainActivity : AppCompatActivity() {
             showToast("연결성공")
         }
     }
-
 
 
     fun showToast(s: String) {

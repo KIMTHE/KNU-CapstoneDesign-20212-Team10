@@ -1,4 +1,4 @@
-package com.example.jongsip
+package com.jongsip.cafe
 
 import android.graphics.Bitmap
 import android.os.AsyncTask

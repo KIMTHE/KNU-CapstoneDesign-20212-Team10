@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/SplashTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="com.jongsip.cafe.MainActivity"
 
             android:exported="true">
             <intent-filter>

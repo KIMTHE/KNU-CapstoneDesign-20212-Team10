@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.jongsip
+package com.jongsip.cafe
 
 import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager

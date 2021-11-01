@@ -1,4 +1,4 @@
-package com.example.jongsip
+package com.jongsip.cafe
 
 import android.content.pm.PackageManager
 import android.content.pm.Signature
