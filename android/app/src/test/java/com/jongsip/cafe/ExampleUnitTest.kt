@@ -1,4 +1,4 @@
-package com.jongsip.jongsip
+package com.jongsip.cafe
 
 import org.junit.Test
 
