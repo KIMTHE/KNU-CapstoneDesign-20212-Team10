@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "735343996679",
+    "project_id": "striking-ensign-328007",
+    "storage_bucket": "striking-ensign-328007.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:735343996679:android:2970a79d7dd4d0835c1fa2",
+        "android_client_info": {
+          "package_name": "com.jongsip.cafe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "735343996679-7c6lb5jtrfqakod19ve81imv41mefvcn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jongsip.cafe",
+            "certificate_hash": "bac2fc838f6d5a7a9122df40b8eb6ac9511a03de"
+          }
+        },
+        {
+          "client_id": "735343996679-hjsf5bguqaf2ttuvchi8q3ucej63v3ah.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvzpdIUg2SXye0jDP-NbLPvmRBA21xqOo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "735343996679-hjsf5bguqaf2ttuvchi8q3ucej63v3ah.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
