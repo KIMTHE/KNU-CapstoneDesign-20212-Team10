@@ -1,44 +1,38 @@
-/*
- * Copyright 2016 Google Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.jongsip.cafe
+package com.jongsip.cafe.fragment
 
 import android.Manifest
-import android.content.*
-import android.widget.TextView
-import android.os.Bundle
-import android.provider.MediaStore
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Bitmap
-import android.net.*
-import android.net.wifi.*
-import android.widget.Toast
-import kotlin.Throws
-import com.google.api.services.vision.v1.Vision.Images.Annotate
-import com.google.api.client.extensions.android.http.AndroidHttp
-import com.google.api.client.json.gson.GsonFactory
-import com.google.api.services.vision.v1.VisionRequestInitializer
-import com.google.api.services.vision.v1.VisionRequest
-import com.google.api.services.vision.v1.Vision
+import android.net.Uri
+import android.net.wifi.SupplicantState
+import android.net.wifi.WifiInfo
+import android.net.wifi.WifiManager
+import android.net.wifi.WifiNetworkSuggestion
+import android.os.Bundle
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
-import android.widget.ImageButton
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.json.JsonFactory
+import com.google.api.client.json.gson.GsonFactory
+import com.google.api.services.vision.v1.Vision
+import com.google.api.services.vision.v1.VisionRequest
+import com.google.api.services.vision.v1.VisionRequestInitializer
 import com.google.api.services.vision.v1.model.*
+import com.jongsip.cafe.MainActivity
+import com.jongsip.cafe.R
 import com.jongsip.cafe.util.OCRUtils
 import com.jongsip.cafe.util.PackageManagerUtils
 import com.jongsip.cafe.util.PermissionUtils
@@ -47,37 +41,23 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.util.ArrayList
-import kotlin.concurrent.timer
 
-class MainActivity : AppCompatActivity() {
+class WifiFragment : Fragment() {
     lateinit var wifiImage: ImageView
     lateinit var wifiStatus: TextView
     private var lastSuggestedNetwork: WifiNetworkSuggestion? = null
     var wifiManager: WifiManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.Theme_Jongsip)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_init)
-        val cameraButton = findViewById<ImageButton>(R.id.camera_button)
+    }
 
-        cameraButton.setOnClickListener {
-            startCamera()
-        }
-
-        wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
-        wifiImage = findViewById(R.id.wifi_image)
-        wifiStatus = findViewById(R.id.wifi_st)
-        getWifiSSID()
-
-        //1초마다 현재 wifi 상태 갱신
-        timer(period = 1000) {
-            runOnUiThread {
-                when (PermissionUtils.requestLocationPermission(this@MainActivity)) {
-                    PermissionUtils.PERMISSION_CODE_ACCEPTED -> getWifiSSID()
-                }
-            }
-        }
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_wifi, container, false)
     }
 
     //카메라 시작
@@ -111,9 +91,9 @@ class MainActivity : AppCompatActivity() {
     //갤러리나 카메라에서 찍은 후 콜백
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == GALLERY_IMAGE_REQUEST && resultCode == RESULT_OK) {
+        if (requestCode == GALLERY_IMAGE_REQUEST && resultCode == AppCompatActivity.RESULT_OK) {
             uploadImage(data!!.data)
-        } else if (requestCode == CAMERA_IMAGE_REQUEST && resultCode == RESULT_OK) {
+        } else if (requestCode == CAMERA_IMAGE_REQUEST && resultCode == AppCompatActivity.RESULT_OK) {
             val photoUri = FileProvider.getUriForFile(
                 this,
                 applicationContext.packageName + ".provider",
@@ -180,7 +160,7 @@ class MainActivity : AppCompatActivity() {
 
     //google cloud vision 에 요청준비
     @Throws(IOException::class)
-    private fun prepareAnnotationRequest(bitmap: Bitmap): Annotate {
+    private fun prepareAnnotationRequest(bitmap: Bitmap): Vision.Images.Annotate {
         val httpTransport = AndroidHttp.newCompatibleTransport()
         val jsonFactory: JsonFactory = GsonFactory.getDefaultInstance()
         val requestInitializer: VisionRequestInitializer = object : VisionRequestInitializer(
@@ -360,8 +340,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     fun showToast(s: String) {
         Toast.makeText(applicationContext, s, Toast.LENGTH_LONG).show()
     }
+
 }

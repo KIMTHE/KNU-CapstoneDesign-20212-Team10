@@ -13,15 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jongsip.cafe
+package com.jongsip.cafe.util
 
 import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
+import com.jongsip.cafe.MainActivity
 import java.util.ArrayList
 
 // 권환 요청관련 util method
 object PermissionUtils {
+    const val PERMISSION_CODE_ACCEPTED = 1
+    const val PERMISSION_CODE_NOT_AVAILABLE = 0
+
+
     fun requestPermission(
         activity: androidx.appcompat.app.AppCompatActivity?, requestCode: Int, vararg permissions: String
     ): Boolean {
@@ -72,17 +77,17 @@ object PermissionUtils {
                 ActivityCompat.requestPermissions(
                     activity,
                     arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                    MainActivity.PERMISSION_CODE_ACCEPTED
+                    PERMISSION_CODE_ACCEPTED
                 )
 
             }
         } else {
             // already granted
-            return MainActivity.PERMISSION_CODE_ACCEPTED
+            return PERMISSION_CODE_ACCEPTED
         }
 
         // not available
-        return MainActivity.PERMISSION_CODE_NOT_AVAILABLE
+        return PERMISSION_CODE_NOT_AVAILABLE
     }
 
 }
