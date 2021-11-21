@@ -15,25 +15,27 @@
  */
 package com.jongsip.cafe.util
 
+import android.app.Activity
+import android.content.Context
 import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
-import com.jongsip.cafe.MainActivity
+import androidx.fragment.app.FragmentActivity
 import java.util.ArrayList
 
 // 권환 요청관련 util method
 object PermissionUtils {
     const val PERMISSION_CODE_ACCEPTED = 1
-    const val PERMISSION_CODE_NOT_AVAILABLE = 0
+    private const val PERMISSION_CODE_NOT_AVAILABLE = 0
 
 
     fun requestPermission(
-        activity: androidx.appcompat.app.AppCompatActivity?, requestCode: Int, vararg permissions: String
+        context: Context, requestCode: Int, vararg permissions: String
     ): Boolean {
         var granted = true
         val permissionsNeeded = ArrayList<String>()
         for (s in permissions) {
-            val permissionCheck = ContextCompat.checkSelfPermission(activity!!, s)
+            val permissionCheck = ContextCompat.checkSelfPermission(context, s)
             val hasPermission = permissionCheck == PackageManager.PERMISSION_GRANTED
             granted = granted and hasPermission
             if (!hasPermission) {
@@ -44,7 +46,7 @@ object PermissionUtils {
             true
         } else {
             ActivityCompat.requestPermissions(
-                activity!!,
+                context as Activity,
                 permissionsNeeded.toTypedArray(),
                 requestCode
             )
@@ -59,23 +61,23 @@ object PermissionUtils {
     }
 
     /*wifi 관련 권한 요청*/
-    fun requestLocationPermission(activity: androidx.appcompat.app.AppCompatActivity?): Int {
+    fun requestLocationPermission(context: Context): Int {
         if (ContextCompat.checkSelfPermission(
-                activity!!,
+                context,
                 android.Manifest.permission.ACCESS_FINE_LOCATION
             )
             != PackageManager.PERMISSION_GRANTED
         ) {
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    activity,
+                    context as Activity,
                     android.Manifest.permission.ACCESS_FINE_LOCATION
                 )
             ) {
             } else {
                 // request permission
                 ActivityCompat.requestPermissions(
-                    activity,
+                    context,
                     arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
                     PERMISSION_CODE_ACCEPTED
                 )
@@ -89,5 +91,6 @@ object PermissionUtils {
         // not available
         return PERMISSION_CODE_NOT_AVAILABLE
     }
+
 
 }

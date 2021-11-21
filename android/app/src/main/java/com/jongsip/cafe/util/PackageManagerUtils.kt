@@ -20,7 +20,7 @@ object PackageManagerUtils {
     fun getSignature(pm: PackageManager, packageName: String): String? {
         return try {
             val packageInfo = pm.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
-            if (packageInfo == null || packageInfo.signatures == null || packageInfo.signatures.size == 0 || packageInfo.signatures[0] == null) {
+            if (packageInfo?.signatures == null || packageInfo.signatures.size == 0 || packageInfo.signatures[0] == null) {
                 null
             } else signatureDigest(packageInfo.signatures[0])
         } catch (e: PackageManager.NameNotFoundException) {

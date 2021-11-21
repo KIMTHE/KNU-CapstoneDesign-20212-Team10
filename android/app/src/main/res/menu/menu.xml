@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_map"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_map_24"
+        android:title="@string/map_text"/>
+
+    <item
+        android:id="@+id/menu_wifi"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_wifi_24"
+        android:title="@string/wifi_text"/>
+
+
+    <item
+        android:id="@+id/menu_setting"
+        android:enabled="true"
+        android:icon="@drawable/ic_baseline_settings_24"
+        android:title="@string/setting_text"/>
+
+</menu>
