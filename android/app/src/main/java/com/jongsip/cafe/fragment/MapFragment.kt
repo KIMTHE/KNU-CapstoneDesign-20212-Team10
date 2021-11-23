@@ -5,7 +5,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import com.jongsip.cafe.R
+import net.daum.mf.map.api.MapView
 
 
 class MapFragment : Fragment() {
@@ -18,8 +21,13 @@ class MapFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_map, container, false)
+        val rootView = inflater.inflate(com.jongsip.cafe.R.layout.fragment_map, container, false)
+
+        val mapView = MapView(activity)
+        val mapViewContainer: ViewGroup = rootView.findViewById(R.id.map_view)
+        mapViewContainer.addView(mapView)
+
+        return rootView
     }
 
     companion object {
