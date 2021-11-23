@@ -23,6 +23,13 @@ import com.jongsip.cafe.R
 import com.jongsip.cafe.fragment.MapFragment
 import com.jongsip.cafe.fragment.SettingFragment
 import com.jongsip.cafe.fragment.WifiFragment
+import android.content.pm.PackageManager
+
+import android.content.pm.PackageInfo
+import android.util.Base64
+import android.util.Log
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,6 +38,20 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        /*키해시 찾기
+        try {
+            val info = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+            for (signature in info.signatures) {
+                val md: MessageDigest = MessageDigest.getInstance("SHA")
+                md.update(signature.toByteArray())
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT))
+            }
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+        } catch (e: NoSuchAlgorithmException) {
+            e.printStackTrace()
+        }*/
 
         bottomNavigation = findViewById(R.id.bottom_navi)
 
