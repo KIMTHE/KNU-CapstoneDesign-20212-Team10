@@ -5,7 +5,7 @@ import com.jongsip.cafe.model.CafeMenu
 import org.json.JSONObject
 import org.jsoup.Jsoup
 
-class CrawlingUtils {
+object CrawlingUtils {
 
     // 카카오맵 상세정보 url 을 받아서, 카페의 메뉴를 크롤링
     fun crawlingCafeMenu(detailUrl: String): ArrayList<CafeMenu>? {

@@ -2,6 +2,7 @@ package com.jongsip.cafe.fragment
 import KakaoAPI
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.*
 import android.os.Bundle
@@ -14,6 +15,8 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jongsip.cafe.R
+import com.jongsip.cafe.activity.CafeDetailActivity
+import com.jongsip.cafe.model.Place
 import com.jongsip.cafe.model.ResultSearchKeyword
 import com.jongsip.cafe.util.PermissionUtils
 import net.daum.mf.map.api.CalloutBalloonAdapter
@@ -32,7 +35,9 @@ class MapFragment : Fragment() {
     private lateinit var mapView : MapView
     private lateinit var locationManager : LocationManager
     lateinit var mapViewContainer: ViewGroup
-    var  urlList = arrayOfNulls<String>(15)//카페 url 담을 배열
+
+    private val eventListener = MarkerEventListener()   // 마커 클릭 이벤트 리스너
+    var cafeList = HashMap<String, Place>(15)//카페 장소 정보
 
     var longitude : Double = 0.0
     var latitude : Double = 0.0
@@ -60,6 +65,7 @@ class MapFragment : Fragment() {
         cardView.visibility = View.GONE
 
         mapView.setCalloutBalloonAdapter(CustomBalloonAdapter(layoutInflater))  // 커스텀 말풍선 등록
+        mapView.setPOIItemEventListener(eventListener)  // 마커 클릭 이벤트 리스너 등록
 
         btnMoveHere = rootView.findViewById(R.id.btn_move_here)
         btnMoveHere.setOnClickListener{
@@ -103,12 +109,10 @@ class MapFragment : Fragment() {
     private fun addMarker(response: Response<ResultSearchKeyword>) {
         val marker = MapPOIItem()
         var mapPoint : MapPoint
-        var i : Int = 0
 
         for (item in response.body()?.documents!!) {
-            urlList[i] = item.place_url
-            i += 1
-            marker.itemName = item.place_name
+            cafeList[item.placeName] = item
+            marker.itemName = item.placeName
             mapPoint = MapPoint.mapPointWithGeoCoord(item.y.toDouble(), item.x.toDouble())
             marker.mapPoint = mapPoint
             marker.markerType = MapPOIItem.MarkerType.BluePin
@@ -164,23 +168,50 @@ class MapFragment : Fragment() {
         mapViewContainer.removeView(mapView)
     }
 
-    class CustomBalloonAdapter(inflater: LayoutInflater): CalloutBalloonAdapter {
-        val mCalloutBalloon: View = inflater.inflate(R.layout.balloon_latout, null)
-        val name: TextView = mCalloutBalloon.findViewById(R.id.ball_tv_name)
-        val address: TextView = mCalloutBalloon.findViewById(R.id.ball_tv_address)
+    // 마커 클릭 말풍선 어댑터
+    inner class CustomBalloonAdapter(inflater: LayoutInflater): CalloutBalloonAdapter {
+        private val mCallOutBalloon: View = inflater.inflate(R.layout.balloon_latout, null)
+        val name: TextView = mCallOutBalloon.findViewById(R.id.ball_tv_name)
+        private val address: TextView = mCallOutBalloon.findViewById(R.id.ball_tv_address)
 
         override fun getCalloutBalloon(poiItem: MapPOIItem?): View {
             // 마커 클릭 시 나오는 말풍선
             Log.d("마커 확인용 ", "${poiItem?.itemName}")
             name.text = poiItem?.itemName   // 해당 마커의 정보 이용 가능
             address.text = "getCalloutBalloon"
-            return mCalloutBalloon
+            return mCallOutBalloon
         }
 
         override fun getPressedCalloutBalloon(poiItem: MapPOIItem?): View {
             // 말풍선 클릭 시
             address.text = "getPressedCalloutBalloon"
-            return mCalloutBalloon
+            return mCallOutBalloon
+        }
+    }
+
+    // 마커 클릭 이벤트 리스너
+    inner class MarkerEventListener(): MapView.POIItemEventListener {
+        override fun onPOIItemSelected(mapView: MapView?, poiItem: MapPOIItem?) {
+            // 마커 클릭 시
+            Log.d("마커 클릭 시 ", "${poiItem?.itemName}")
+            val intent = Intent(activity, CafeDetailActivity::class.java)
+            intent.putExtra("detailUrl",cafeList[poiItem!!.itemName]!!.placeUrl)
+            intent.putExtra("placeName",poiItem.itemName)
+            intent.putExtra("addressName",cafeList[poiItem.itemName]!!.addressName)
+            startActivity(intent)
+        }
+
+        override fun onCalloutBalloonOfPOIItemTouched(mapView: MapView?, poiItem: MapPOIItem?) {
+            // 말풍선 클릭 시 (Deprecated)
+            // 이 함수도 작동하지만 그냥 아래 있는 함수에 작성하자
+        }
+
+        override fun onCalloutBalloonOfPOIItemTouched(mapView: MapView?, poiItem: MapPOIItem?, buttonType: MapPOIItem.CalloutBalloonButtonType?) {
+            // 말풍선 클릭 시
+        }
+
+        override fun onDraggablePOIItemMoved(mapView: MapView?, poiItem: MapPOIItem?, mapPoint: MapPoint?) {
+            // 마커의 속성 중 isDraggable = true 일 때 마커를 이동시켰을 경우
         }
     }
 }

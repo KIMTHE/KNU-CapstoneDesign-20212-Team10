@@ -39,20 +39,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        /*키해시 찾기
-        try {
-            val info = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
-            for (signature in info.signatures) {
-                val md: MessageDigest = MessageDigest.getInstance("SHA")
-                md.update(signature.toByteArray())
-                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT))
-            }
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-        } catch (e: NoSuchAlgorithmException) {
-            e.printStackTrace()
-        }*/
-
         bottomNavigation = findViewById(R.id.bottom_navi)
 
         supportFragmentManager.beginTransaction().add(R.id.fragment_frame, MapFragment())
@@ -67,8 +53,6 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-
-        //PermissionUtil.requestLocationPermission(this)//위치 권한 요청
     }
 
     private fun replaceFragment(fragmentClass: Fragment, tag: String) {

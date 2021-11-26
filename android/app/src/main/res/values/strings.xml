@@ -15,8 +15,10 @@
 
     <string name="text_not_connect">연결 안됨</string>
     <string name="text_wifi_connect">현재 접속중인 WIFI : %1$s</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="map_text">지도</string>
     <string name="wifi_text">와이파이</string>
     <string name="setting_text">설정</string>
+
+    <string name="item_cafe_price_text">%d원</string>
 </resources>

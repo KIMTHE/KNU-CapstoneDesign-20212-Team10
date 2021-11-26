@@ -20,6 +20,7 @@
         android:networkSecurityConfig="@xml/network_security_config">
         <meta-data android:name="com.kakao.sdk.AppKey" android:value="15769c778dc53fb2c1c2c201ef65e423"/>
 
+        <activity android:name=".activity.CafeDetailActivity" />
         <activity
             android:name=".activity.MainActivity"
             android:exported="true">
