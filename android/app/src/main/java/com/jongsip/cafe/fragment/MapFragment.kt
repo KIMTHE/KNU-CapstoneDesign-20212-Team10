@@ -24,14 +24,12 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.IOException
-import java.util.*
 
 
 class MapFragment : Fragment() {
     lateinit var btnMoveHere: FloatingActionButton
     private lateinit var mapView : MapView
-    lateinit var locatioNManager : LocationManager
+    private lateinit var locationManager : LocationManager
     lateinit var mapViewContainer: ViewGroup
     var  urlList = arrayOfNulls<String>(15)//카페 url 담을 배열
 
@@ -60,12 +58,12 @@ class MapFragment : Fragment() {
         btnMoveHere = rootView.findViewById(R.id.btn_move_here)
         btnMoveHere.setOnClickListener{
             if (checkLocationService()) {
-                // GPS가 켜져있을 경우
+                // GPS 가 켜져있을 경우
                 when (PermissionUtils.requestLocationPermission(requireActivity())) {
                     PermissionUtils.PERMISSION_CODE_ACCEPTED -> getLocation()
                 }
             } else {
-                // GPS가 꺼져있을 경우
+                // GPS 가 꺼져있을 경우
                 Toast.makeText(activity, "GPS를 켜주세요", Toast.LENGTH_SHORT).show()
             }
         }
@@ -75,20 +73,20 @@ class MapFragment : Fragment() {
         return rootView
     }
 
-    // GPS가 켜져있는지 확인
+    // GPS 가 켜져있는지 확인
     private fun checkLocationService(): Boolean {
         val locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
     private fun getLocation(){
-        locatioNManager = (activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager?)!!
-        var userLocation: Location? = getLatLng()
+        locationManager = (activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager?)!!
+        val userLocation: Location? = getLatLng()
         if(userLocation != null){
             latitude = userLocation.latitude
             longitude = userLocation.longitude
 
-            var mapPoint : MapPoint = MapPoint.mapPointWithGeoCoord(latitude, longitude)
+            val mapPoint : MapPoint = MapPoint.mapPointWithGeoCoord(latitude, longitude)
             mapView.setMapCenterPoint(mapPoint, true)//맵 이동
             mapView.setZoomLevel(1, true)
             searchKeyword("카페")
@@ -115,17 +113,17 @@ class MapFragment : Fragment() {
 
     private fun getLatLng(): Location? {
         var currentLatLng: Location? = null
-        var hasFineLocationPermission = ContextCompat.checkSelfPermission(requireActivity(),
+        val hasFineLocationPermission = ContextCompat.checkSelfPermission(requireActivity(),
             Manifest.permission.ACCESS_FINE_LOCATION)
-        var hasCoarseLocationPermission = ContextCompat.checkSelfPermission(requireActivity(),
+        val hasCoarseLocationPermission = ContextCompat.checkSelfPermission(requireActivity(),
             Manifest.permission.ACCESS_COARSE_LOCATION)
 
-        if(hasFineLocationPermission == PackageManager.PERMISSION_GRANTED &&
+        currentLatLng = if(hasFineLocationPermission == PackageManager.PERMISSION_GRANTED &&
             hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED){
             val locationProvider = LocationManager.GPS_PROVIDER
-            currentLatLng = locatioNManager?.getLastKnownLocation(locationProvider)
+            locationManager.getLastKnownLocation(locationProvider)
         }else{
-            currentLatLng = getLatLng()
+            getLatLng()
         }
         return currentLatLng
     }

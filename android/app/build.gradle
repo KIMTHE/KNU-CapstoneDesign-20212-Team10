@@ -59,4 +59,11 @@ dependencies {
     //https://featherwing.tistory.com/48 빌드문제해결
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
 
+    //coroutine
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2-native-mt'
+
+    //web crawling
+    implementation 'org.jsoup:jsoup:1.14.3'
+    implementation 'org.json:json:20180813'
+
 }
