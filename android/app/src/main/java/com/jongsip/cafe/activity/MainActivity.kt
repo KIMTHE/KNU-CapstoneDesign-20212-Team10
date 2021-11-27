@@ -32,8 +32,10 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MapFragment.OnDataPassListener  {
     private lateinit var bottomNavigation: BottomNavigationView
+    lateinit var currentCafeName : String
+    lateinit var currentCafeUrl : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,10 +54,14 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-
     }
 
     private fun replaceFragment(fragmentClass: Fragment, tag: String) {
+        val bundle = Bundle()
+        bundle.putString("currentCafeName", currentCafeName)
+        bundle.putString("currentCafeUrl", currentCafeUrl)
+        fragmentClass.arguments = bundle //유저 정보를 넘겨줌
+
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_frame, (fragmentClass),tag)
             .addToBackStack(tag).commit()
@@ -85,4 +91,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //MapFragment 에서 위도 경도 정보 받음
+    override fun onDataPass(cafeName: String, cafeUrl: String) {
+        currentCafeName = cafeName
+        currentCafeUrl = cafeUrl
+    }
 }

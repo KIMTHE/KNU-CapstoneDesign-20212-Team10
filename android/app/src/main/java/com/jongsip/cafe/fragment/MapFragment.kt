@@ -38,10 +38,12 @@ class MapFragment : Fragment() {
     lateinit var mapViewContainer: ViewGroup
 
     private val eventListener = MarkerEventListener()   // 마커 클릭 이벤트 리스너
-    var cafeList = HashMap<String, Place>(15)//카페 장소 정보
+    var cafeList = HashMap<String, Place>(45)//카페 장소 정보
 
     var longitude : Double = 0.0
     var latitude : Double = 0.0
+
+    lateinit var nowCafeName : String
 
     companion object {
         const val BASE_URL = "https://dapi.kakao.com/"
@@ -109,8 +111,14 @@ class MapFragment : Fragment() {
     //지도에 마커 추가
     private fun addMarker(response: Response<ResultSearchKeyword>) {
         var mapPoint : MapPoint
+        Log.d("현재 상황", "${response.body()?.documents!!}" )
 
+        var check : Int = 0
         for (item in response.body()?.documents!!) {
+            if(check == 0){//제일 가까운 카페 이름, 해당 웹주소 mainActivty로 보내기
+                dataPassListener.onDataPass(item.place_name, item.place_url)
+                check = 1
+            }
             val marker = MapPOIItem()
             cafeList[item.place_name] = item
             marker.itemName = item.place_name
@@ -147,7 +155,7 @@ class MapFragment : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(KakaoAPI::class.java)   // 통신 인터페이스를 객체로 생성
-        val call = api.getSearchKeyword(API_KEY, keyword,longitude.toString(), latitude.toString(), 500)   // 검색 조건 입력
+        val call = api.getSearchKeyword(API_KEY, keyword,longitude.toString(), latitude.toString(), 20000, "distance")   // 검색 조건 입력
 
         // API 서버에 요청
         call.enqueue(object: Callback<ResultSearchKeyword> {
@@ -213,6 +221,19 @@ class MapFragment : Fragment() {
         override fun onDraggablePOIItemMoved(mapView: MapView?, poiItem: MapPOIItem?, mapPoint: MapPoint?) {
             // 마커의 속성 중 isDraggable = true 일 때 마커를 이동시켰을 경우
         }
+    }
+
+    //MainActivity 로 가게이름, 해당 링크 보내기 위한 부분
+    interface OnDataPassListener {
+        fun onDataPass(currentCafeName: String, currentCafeUrl: String)
+    }
+
+    private lateinit var dataPassListener: OnDataPassListener
+
+    //MainActivity 로 가게이름, 해당 링크 보내기 위한 부분
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        dataPassListener = context as OnDataPassListener //형변환
     }
 
     override fun onStart() {

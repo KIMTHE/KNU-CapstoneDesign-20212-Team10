@@ -31,8 +31,11 @@ import com.google.api.services.vision.v1.Vision
 import com.google.api.services.vision.v1.VisionRequest
 import com.google.api.services.vision.v1.VisionRequestInitializer
 import com.google.api.services.vision.v1.model.*
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import com.jongsip.cafe.activity.MainActivity
 import com.jongsip.cafe.R
+import com.jongsip.cafe.model.wifiIdPw
 import com.jongsip.cafe.util.PackageManagerUtils
 import com.jongsip.cafe.util.PermissionUtils
 import com.jongsip.cafe.util.WifiLoginUtils
@@ -51,9 +54,15 @@ class WifiFragment : Fragment() {
     private var lastSuggestedNetwork: WifiNetworkSuggestion? = null
     var wifiManager: WifiManager? = null
 
+    lateinit var currentCafeName : String
+    lateinit var currentCafeUrl : String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wifiManager = requireContext().getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager
+        //MainActivity 에서 카페이름, url 정보 가져옴
+        currentCafeName = arguments?.getString("currentCafeName").toString()
+        currentCafeUrl = arguments?.getString("currentCafeUrl").toString()
     }
 
     override fun onCreateView(
@@ -80,7 +89,6 @@ class WifiFragment : Fragment() {
                 }
             }
         }
-
 
         return rootView
     }
@@ -183,7 +191,7 @@ class WifiFragment : Fragment() {
     }
 
     //비동기처리를 수행함
-    class LabelDetectionTask internal constructor(
+    inner class LabelDetectionTask internal constructor(
         fragment: WifiFragment,
         annotate: Vision.Images.Annotate
     ) : AsyncTask<Any?, Void?, String>() {
@@ -210,10 +218,9 @@ class WifiFragment : Fragment() {
         override fun onPostExecute(result: String) {
             val fragment = mActivityWeakReference.get()
             if (fragment != null) {
-                connectWithOCR(fragment)
+                connectWithOCR(fragment, currentCafeName, currentCafeUrl)
             }
         }
-
     }
 
     //google cloud vision 에 요청준비
@@ -331,7 +338,7 @@ class WifiFragment : Fragment() {
         }
 
         //모든 경우로 로그인 시도
-        fun connectWithOCR(wifiFragment: WifiFragment) {
+        fun connectWithOCR(wifiFragment: WifiFragment, currentCafeName : String, currentCafeUrl : String) {
 
             if (WifiLoginUtils.idCase.size == 0 || WifiLoginUtils.pwCase.size == 0)
                 wifiFragment.showToast(wifiFragment.getString(R.string.image_picker_error))
@@ -341,9 +348,19 @@ class WifiFragment : Fragment() {
                         wifiFragment.wifiManager!!.disconnect()
                         wifiFragment.connectUsingNetworkSuggestion(ssid = id, password = pw)
                         wifiFragment.wifiManager!!.reconnect()
+                        //Log.d("파이어베이스 : " , id)
 
                         val ssid = wifiFragment.getWifiSSID()
-                        if (ssid != null && ssid == id) break
+                        if (ssid != null && ssid == id) {
+                            //lateinit var auth: FirebaseAuth
+                            lateinit var firestore: FirebaseFirestore
+                            //auth = Firebase.auth
+                            firestore = FirebaseFirestore.getInstance()
+                            //파이어베이스에 저장
+                            firestore.collection("wifiInfo").document(currentCafeUrl).set(wifiIdPw(id, pw))
+
+                            break
+                        }
                     }
                 }
             }

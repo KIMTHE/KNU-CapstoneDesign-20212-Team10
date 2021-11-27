@@ -12,6 +12,7 @@ interface KakaoAPI {
         @Query("x") x: String,
         @Query("y") y: String,
         @Query("radius") radius: Int,
+        @Query("sort") sort: String,
         // 매개변수 추가 가능
 
 
