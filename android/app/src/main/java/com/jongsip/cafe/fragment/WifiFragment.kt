@@ -163,11 +163,11 @@ class WifiFragment : Fragment() {
                 callCloudVision(bitmap)
                 //mMainImage!!.setImageBitmap(bitmap)
             } catch (e: IOException) {
-                Log.d(TAG, "Image picking failed because " + e.message)
+                Log.d(TAG, "uploadImage : Image picking failed because " + e.message)
                 Toast.makeText(activity, R.string.image_picker_error, Toast.LENGTH_LONG).show()
             }
         } else {
-            Log.d(TAG, "Image picker gave us a null image.")
+            Log.d(TAG, "uploadImage : Image picker gave us a null image.")
             Toast.makeText(activity, R.string.image_picker_error, Toast.LENGTH_LONG).show()
         }
     }
@@ -183,7 +183,7 @@ class WifiFragment : Fragment() {
 
         } catch (e: IOException) {
             Log.d(
-                TAG, "failed to make API request because of other IOException " +
+                TAG, "callCloudVision: failed to make API request because of other IOException " +
                         e.message
             )
         }
@@ -199,14 +199,14 @@ class WifiFragment : Fragment() {
 
         override fun doInBackground(vararg params: Any?): String? {
             try {
-                //Log.d(MainActivity.TAG, "created Cloud Vision request object, sending request")
+                Log.d(TAG, "doInBackground: created Cloud Vision request object, sending request")
                 val response = mRequest.execute()
                 return convertResponseToString(response)
             } catch (e: GoogleJsonResponseException) {
-                //Log.d(MainActivity.TAG, "failed to make API request because " + e.content)
+                Log.d(TAG, "doInBackground : failed to make API request because " + e.content)
             } catch (e: IOException) {
                 Log.d(
-                    TAG, "failed to make API request because of other IOException " +
+                    TAG, "doInBackground : failed to make API request because of other IOException " +
                             e.message
                 )
             }
@@ -281,7 +281,7 @@ class WifiFragment : Fragment() {
         val annotateRequest = vision.images().annotate(batchAnnotateImagesRequest)
         // Due to a bug: requests to Vision API containing large images fail when GZipped.
         annotateRequest.disableGZipContent = true
-        Log.d(TAG, "created Cloud Vision request object, sending request")
+        Log.d(TAG, "prepareAnnotationRequest: created Cloud Vision request object, sending request")
         return annotateRequest
     }
 
@@ -306,9 +306,6 @@ class WifiFragment : Fragment() {
         return Bitmap.createScaledBitmap(bitmap, resizedWidth, resizedHeight, false)
     }
 
-
-
-
     //정적 property, method
     companion object {
         private const val CLOUD_VISION_API_KEY = "AIzaSyADg5z34EPSdRj4lbgYxS9FEU3ExQQfSfc"
@@ -317,7 +314,7 @@ class WifiFragment : Fragment() {
         private const val ANDROID_PACKAGE_HEADER = "X-Android-Package"
         private const val MAX_LABEL_RESULTS = 10
         private const val MAX_DIMENSION = 1200
-        val TAG = WifiFragment::class.java.simpleName
+        val TAG: String = WifiFragment::class.java.simpleName
         private const val GALLERY_IMAGE_REQUEST = 1
         const val CAMERA_PERMISSIONS_REQUEST = 2
         const val CAMERA_IMAGE_REQUEST = 3
@@ -334,6 +331,7 @@ class WifiFragment : Fragment() {
 
             WifiLoginUtils.extract(message)
 
+            Log.d(TAG, "convertResponseToString: $message")
             return message
         }
 
@@ -372,12 +370,12 @@ class WifiFragment : Fragment() {
             } else {
                 textWifiStatus.text = getString(R.string.text_wifi_connect, ssid)
                 imgWifi.setImageResource(R.drawable.ic_baseline_wifi_24)
-                Log.d("wifi name", ssid)
+                //Log.d(TAG, "getWifiSSID: $ssid")
 
                 return ssid
             }
         } else {
-            Log.d("wifi name", "could not obtain the wifi name")
+            //Log.d(TAG, "getWifiSSID: could not obtain the wifi name")
             textWifiStatus.text = getString(R.string.text_not_connect)
             imgWifi.setImageResource(R.drawable.ic_baseline_wifi_off_24)
         }
