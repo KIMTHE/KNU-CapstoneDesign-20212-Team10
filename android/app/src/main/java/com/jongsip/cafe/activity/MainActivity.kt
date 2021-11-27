@@ -28,8 +28,12 @@ import android.content.pm.PackageManager
 import android.content.pm.PackageInfo
 import android.util.Base64
 import android.util.Log
+import android.view.View
+import android.widget.Toast
+import androidx.fragment.app.FragmentManager
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import kotlin.system.exitProcess
 
 
 class MainActivity : AppCompatActivity(), MapFragment.OnDataPassListener  {
@@ -37,20 +41,28 @@ class MainActivity : AppCompatActivity(), MapFragment.OnDataPassListener  {
     lateinit var currentCafeName : String
     lateinit var currentCafeUrl : String
 
+    //최근에 뒤로가기 버튼을 누른 시각각
+    private var backPressedTime: Long = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         bottomNavigation = findViewById(R.id.bottom_navi)
 
-        supportFragmentManager.beginTransaction().add(R.id.fragment_frame, MapFragment())
-            .commit()
+        replaceFragment(MapFragment(),"map")
 
-        bottomNavigation.setOnNavigationItemSelectedListener {
+        bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.menu_map -> replaceFragment(MapFragment(),"map")
-                R.id.menu_wifi -> replaceFragment(WifiFragment(),"wifi")
-                else -> replaceFragment(SettingFragment(),"setting")
+                R.id.menu_map -> {
+                    replaceFragment(MapFragment(), "map")
+                }
+                R.id.menu_wifi -> {
+                    replaceFragment(WifiFragment(), "wifi")
+                }
+                else -> {
+                    replaceFragment(SettingFragment(), "setting")
+                }
             }
             true
         }
@@ -62,33 +74,59 @@ class MainActivity : AppCompatActivity(), MapFragment.OnDataPassListener  {
         bundle.putString("currentCafeUrl", currentCafeUrl)
         fragmentClass.arguments = bundle //유저 정보를 넘겨줌
 
+        supportFragmentManager.popBackStackImmediate(tag, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_frame, (fragmentClass),tag)
+            .replace(R.id.fragment_frame, (fragmentClass), tag)
             .addToBackStack(tag).commit()
     }
 
 
     //뒤로가기버튼을 누를때 콜백
     override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount == 1) {
+            val tempTime = System.currentTimeMillis()
+            val intervalTime = tempTime - backPressedTime
+
+            //2초이내 한번 더 뒤로가기 눌렀을 때, 종료
+            if (!(0 > intervalTime || 2000 < intervalTime)) {
+                finishAffinity()
+                System.runFinalization()
+                exitProcess(0)
+            } else {
+                backPressedTime = tempTime
+                Toast.makeText(this, "'뒤로' 버튼을 한 번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
         super.onBackPressed()
         updateBottomMenu()
     }
 
     //태그를 통해 현재 프래그먼트를 찾아서, 메뉴활성화
     private fun updateBottomMenu() {
+        when (nowFragment()) {
+            "map" -> bottomNavigation.menu.findItem(R.id.menu_map).isChecked = true
+            "wifi" -> bottomNavigation.menu.findItem(R.id.menu_wifi).isChecked = true
+            "setting" -> bottomNavigation.menu.findItem(R.id.menu_setting).isChecked = true
+        }
+
+    }
+
+    //태그를 통해 현재 프래그먼트를 찾아서, 태그반환
+    private fun nowFragment(): String {
         val tag1: Fragment? = supportFragmentManager.findFragmentByTag("map")
         val tag2: Fragment? = supportFragmentManager.findFragmentByTag("wifi")
         val tag3: Fragment? = supportFragmentManager.findFragmentByTag("setting")
 
-        if (tag1 != null && tag1.isVisible) {
-            bottomNavigation.menu.findItem(R.id.menu_map).isChecked = true
-        }
-        if (tag2 != null && tag2.isVisible) {
-            bottomNavigation.menu.findItem(R.id.menu_wifi).isChecked = true
-        }
-        if (tag3 != null && tag3.isVisible) {
-            bottomNavigation.menu.findItem(R.id.menu_setting).isChecked = true
-        }
+        return if (tag1 != null && tag1.isVisible) {
+            "map"
+        } else if (tag2 != null && tag2.isVisible) {
+            "wifi"
+        } else if (tag3 != null && tag3.isVisible) {
+            "setting"
+        } else
+            "close"
+
     }
 
     //MapFragment 에서 위도 경도 정보 받음

@@ -36,6 +36,7 @@
     </LinearLayout>
 
     <ImageView
+        android:padding="5dp"
         android:visibility="invisible"
         android:id="@+id/img_cafe_menu"
         android:layout_width="0dp"
