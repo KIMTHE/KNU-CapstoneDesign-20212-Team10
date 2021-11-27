@@ -40,7 +40,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.lang.ref.WeakReference
-import java.util.ArrayList
+import java.util.*
 import kotlin.concurrent.timer
 
 class WifiFragment : Fragment() {
@@ -50,6 +50,7 @@ class WifiFragment : Fragment() {
 
     private var lastSuggestedNetwork: WifiNetworkSuggestion? = null
     var wifiManager: WifiManager? = null
+    lateinit var checkWifiThread: Timer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,18 +72,24 @@ class WifiFragment : Fragment() {
             startCamera()
         }
 
-        getWifiSSID()
+        return rootView
+    }
+
+    override fun onPause() {
+        super.onPause()
+        checkWifiThread.cancel()
+    }
+
+    override fun onResume() {
+        super.onResume()
         //1초마다 현재 wifi 상태 갱신
-        timer(period = 1000) {
+        checkWifiThread = timer(period = 1000) {
             requireActivity().runOnUiThread {
                 when (PermissionUtils.requestLocationPermission(requireActivity())) {
                     PermissionUtils.PERMISSION_CODE_ACCEPTED -> getWifiSSID()
                 }
             }
         }
-
-
-        return rootView
     }
 
     //카메라 시작
