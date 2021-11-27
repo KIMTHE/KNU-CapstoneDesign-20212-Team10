@@ -47,10 +47,6 @@ class CafeMenuAdapter(private val context: CafeDetailActivity, private val data:
 
         view.findViewById<TextView>(R.id.text_cafe_menu_name).text = item.name
 
-//        view.findViewById<LinearLayout>(R.id.layout_cafe_menu).setOnClickListener {
-//            AlertDialog.Builder(context).setTitle("메뉴 이름").setMessage("이 커피는 ~입니다.").show()
-//        }
-
         return view
     }
 

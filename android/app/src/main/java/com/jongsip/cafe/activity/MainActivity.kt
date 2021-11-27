@@ -38,8 +38,8 @@ import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity(), MapFragment.OnDataPassListener  {
     private lateinit var bottomNavigation: BottomNavigationView
-    lateinit var currentCafeName : String
-    lateinit var currentCafeUrl : String
+    private var currentCafeName : String? = null
+   private var currentCafeUrl : String? = null
 
     //최근에 뒤로가기 버튼을 누른 시각각
     private var backPressedTime: Long = 0

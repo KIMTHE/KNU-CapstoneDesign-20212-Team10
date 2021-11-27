@@ -43,6 +43,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.lang.ref.WeakReference
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.timer
 
@@ -54,6 +55,7 @@ class WifiFragment : Fragment() {
     private var lastSuggestedNetwork: WifiNetworkSuggestion? = null
     var wifiManager: WifiManager? = null
     lateinit var checkWifiThread: Timer
+    var timeStamp: String? = null
 
     lateinit var currentCafeName : String
     lateinit var currentCafeUrl : String
@@ -109,14 +111,15 @@ class WifiFragment : Fragment() {
                 Manifest.permission.CAMERA
             )
         ) {
+            timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             val photoUri = FileProvider.getUriForFile(
                 requireContext(),
-                requireActivity().applicationContext.packageName + ".provider",
+                requireContext().applicationContext.packageName + ".provider",
                 cameraFile
             )
             intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            //intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             startActivityForResult(intent, CAMERA_IMAGE_REQUEST)
         }
     }
@@ -125,17 +128,15 @@ class WifiFragment : Fragment() {
     private val cameraFile: File
         get() {
             val dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-            return File(dir, FILE_NAME)
+            return File(dir, "${timeStamp}_temp.jpg")
         }
 
     //카메라에서 찍은 후 콜백
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == GALLERY_IMAGE_REQUEST && resultCode == AppCompatActivity.RESULT_OK) {
-            uploadImage(data!!.data)
-        } else if (requestCode == CAMERA_IMAGE_REQUEST && resultCode == AppCompatActivity.RESULT_OK) {
+        if (requestCode == CAMERA_IMAGE_REQUEST && resultCode == AppCompatActivity.RESULT_OK) {
             val photoUri = FileProvider.getUriForFile(
-                requireActivity(),
+                requireContext(),
                 requireContext().packageName + ".provider",
                 cameraFile
             )
@@ -317,13 +318,11 @@ class WifiFragment : Fragment() {
     //정적 property, method
     companion object {
         private const val CLOUD_VISION_API_KEY = "AIzaSyADg5z34EPSdRj4lbgYxS9FEU3ExQQfSfc"
-        const val FILE_NAME = "temp.jpg"
         private const val ANDROID_CERT_HEADER = "X-Android-Cert"
         private const val ANDROID_PACKAGE_HEADER = "X-Android-Package"
         private const val MAX_LABEL_RESULTS = 10
         private const val MAX_DIMENSION = 1200
         val TAG: String = WifiFragment::class.java.simpleName
-        private const val GALLERY_IMAGE_REQUEST = 1
         const val CAMERA_PERMISSIONS_REQUEST = 2
         const val CAMERA_IMAGE_REQUEST = 3
 
