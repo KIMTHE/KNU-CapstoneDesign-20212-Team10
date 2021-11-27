@@ -20,5 +20,5 @@
     <string name="wifi_text">와이파이</string>
     <string name="setting_text">설정</string>
 
-    <string name="item_cafe_price_text">%d원</string>
+    <string name="item_cafe_price_text">%s 원</string>
 </resources>

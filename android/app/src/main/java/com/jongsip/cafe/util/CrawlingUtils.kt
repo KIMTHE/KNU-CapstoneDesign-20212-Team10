@@ -29,11 +29,11 @@ object CrawlingUtils {
                 val iObject = jsonMenuArray.getJSONObject(i)
 
                 val name: String = iObject.optString("menu")
-                var price: Int? = iObject.optInt("price")
+                var price: String? = iObject.optString("price")
                 var imgUrl: String? = iObject.optString("img")
 
 
-                if(price == 0) price = null
+                if(price == "") price = null
                 if(imgUrl == "") imgUrl = null
 
                 menuInfo.add(CafeMenu(name,price,imgUrl))

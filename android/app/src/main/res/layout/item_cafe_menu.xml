@@ -9,21 +9,11 @@
     android:orientation="horizontal"
     android:background="@drawable/square_background_border_black">
 
-    <ImageView
-        android:id="@+id/img_cafe_menu"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:scaleType="fitXY"
-        android:src="@drawable/ic_baseline_image_not_supported_24"
-        android:background="@drawable/square_background_border_black"/>
-
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="2"
-        android:orientation="vertical"
-        android:background="@drawable/square_background_border_black">
+        android:orientation="vertical">
 
         <TextView
             tools:text="아메리카노"
@@ -44,4 +34,12 @@
             android:layout_weight="1"
             tools:text="3000원" />
     </LinearLayout>
+
+    <ImageView
+        android:visibility="invisible"
+        android:id="@+id/img_cafe_menu"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:scaleType="fitXY" />
 </LinearLayout>
