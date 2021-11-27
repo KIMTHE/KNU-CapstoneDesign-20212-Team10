@@ -62,7 +62,8 @@ dependencies {
 
     implementation platform('com.google.firebase:firebase-bom:29.0.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
-    implementation ('com.google.firebase:firebase-firestore:24.0.0')
+    implementation 'com.google.firebase:firebase-firestore:24.0.0'
+    implementation 'com.google.firebase:firebase-storage'
 
     //https://featherwing.tistory.com/48 빌드문제해결
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'

@@ -355,7 +355,9 @@ class WifiFragment : Fragment() {
                         wifiFragment.wifiManager!!.reconnect()
 
                         var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
-                        firestore.collection("wifiInfo").document(currentCafeName).set(wifiIdPw(id, pw))
+                        var temp :String = currentCafeUrl.substring(27)
+                        Log.d("잘린주소 : " , temp)
+                        firestore.collection("wifiInfo").document(temp).set(wifiIdPw(id, pw))
 
 
 
@@ -426,7 +428,7 @@ class WifiFragment : Fragment() {
         var status = wifiManager!!.addNetworkSuggestions(suggestionsList)
         Log.i("WifiNetworkSuggestion", "Adding Network suggestions status is $status")
         if (status == WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE) {
-            showToast("이미 등록되있습니다")
+            showToast("이미 등록돼있습니다")
             status = wifiManager!!.removeNetworkSuggestions(suggestionsList)
             Log.i("WifiNetworkSuggestion", "Removing Network suggestions status is $status")
             status = wifiManager!!.addNetworkSuggestions(suggestionsList)

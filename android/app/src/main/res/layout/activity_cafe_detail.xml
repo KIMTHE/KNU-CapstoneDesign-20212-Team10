@@ -31,6 +31,12 @@
             app:layout_constraintTop_toBottomOf="@id/text_cafe_name"
             tools:text="대구광역시 북구 산격동" />
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="임시 WIFI 연결버튼"
+            android:id="@+id/connect_wifi"/>
+
         <ListView
             android:id="@+id/list_cafe_menu"
             android:layout_width="match_parent"
@@ -38,7 +44,6 @@
             android:layout_marginTop="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/text_cafe_address" />
-
 
     </LinearLayout>
 </ScrollView>
