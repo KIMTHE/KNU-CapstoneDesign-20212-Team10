@@ -353,19 +353,15 @@ class WifiFragment : Fragment() {
                         wifiFragment.wifiManager!!.disconnect()
                         wifiFragment.connectUsingNetworkSuggestion(ssid = id, password = pw)
                         wifiFragment.wifiManager!!.reconnect()
-                        //Log.d("파이어베이스 : " , id)
+
+                        var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+                        firestore.collection("wifiInfo").document(currentCafeName).set(wifiIdPw(id, pw))
+
+
 
                         val ssid = wifiFragment.getWifiSSID()
-                        if (ssid != null && ssid == id) {
-                            //lateinit var auth: FirebaseAuth
-                            lateinit var firestore: FirebaseFirestore
-                            //auth = Firebase.auth
-                            firestore = FirebaseFirestore.getInstance()
-                            //파이어베이스에 저장
-                            firestore.collection("wifiInfo").document(currentCafeUrl).set(wifiIdPw(id, pw))
-
+                        if (ssid != null && ssid == id)
                             break
-                        }
                     }
                 }
             }
