@@ -23,8 +23,6 @@ class CafeDetailActivity : AppCompatActivity() {
     lateinit var connectWifi: Button
 
     lateinit var firestore: FirebaseFirestore
-    private lateinit var storage: FirebaseStorage
-    private lateinit var storageRef: StorageReference
 
     private var lastSuggestedNetwork: WifiNetworkSuggestion? = null
     var wifiManager: WifiManager? = null
@@ -42,8 +40,6 @@ class CafeDetailActivity : AppCompatActivity() {
         wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
 
         firestore = FirebaseFirestore.getInstance()
-        storage = FirebaseStorage.getInstance()
-        storageRef = storage.reference
 
         textCafeName = findViewById(R.id.text_cafe_name)
         textCafeAddress = findViewById(R.id.text_cafe_address)
