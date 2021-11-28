@@ -1,10 +1,9 @@
 package com.jongsip.cafe.fragment
 
 import android.Manifest
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.*
 import android.graphics.Bitmap
 import android.net.Uri
 import android.net.wifi.SupplicantState
@@ -23,6 +22,8 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import com.google.android.material.internal.ContextUtils
+import com.google.android.material.internal.ContextUtils.getActivity
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.json.JsonFactory
@@ -227,7 +228,8 @@ class WifiFragment : Fragment() {
         override fun onPostExecute(result: String) {
             val fragment = mActivityWeakReference.get()
             if (fragment != null) {
-                connectWithOCR(fragment, currentCafeName, currentCafeUrl)
+                var context = activity
+                connectWithOCR(fragment, currentCafeName, currentCafeUrl, context!!)
             }
         }
     }
@@ -343,7 +345,7 @@ class WifiFragment : Fragment() {
         }
 
         //모든 경우로 로그인 시도
-        fun connectWithOCR(wifiFragment: WifiFragment, currentCafeName : String, currentCafeUrl : String) {
+        fun connectWithOCR(wifiFragment: WifiFragment, currentCafeName : String, currentCafeUrl : String, context: Context) {
 
             if (WifiLoginUtils.idCase.size == 0 || WifiLoginUtils.pwCase.size == 0)
                 wifiFragment.showToast(wifiFragment.getString(R.string.image_picker_error))
@@ -354,16 +356,31 @@ class WifiFragment : Fragment() {
                         wifiFragment.connectUsingNetworkSuggestion(ssid = id, password = pw)
                         wifiFragment.wifiManager!!.reconnect()
 
-                        var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
-                        var temp :String = currentCafeUrl.substring(27)
-                        Log.d("잘린주소 : " , temp)
-                        firestore.collection("wifiInfo").document(temp).set(wifiIdPw(id, pw))
+                        //연결 성공인지 체크
+                       val ssid = wifiFragment.getWifiSSID()
+                        if (ssid != null && ssid == id){
+                            var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+                            var temp :String = currentCafeUrl.substring(27)
+                            Log.d("잘린주소 : " , temp)
 
+                            var builder = AlertDialog.Builder(context)
+                            builder.setTitle(currentCafeName)
+                            builder.setMessage("현재 위치하고있는 카페가 맞나요?")
+                            builder.setIcon(R.drawable.cafe_icon)
 
+                            var listener = DialogInterface.OnClickListener { _, p1 ->
+                                when (p1) {
+                                    DialogInterface.BUTTON_POSITIVE ->//맞으면 파이어베이스에 저장
+                                        firestore.collection("wifiInfo").document(temp).set(wifiIdPw(id, pw))
+                                }
+                            }
+                            builder.setPositiveButton("맞아요!", listener)
+                            builder.setNegativeButton("아니에요", listener)
 
-                        val ssid = wifiFragment.getWifiSSID()
-                        if (ssid != null && ssid == id)
+                            builder.show()
+
                             break
+                        }
                     }
                 }
             }
