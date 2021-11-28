@@ -146,6 +146,11 @@ class MapFragment : Fragment() {
         }else{
             getLatLng()
         }
+
+        if(currentLatLng == null){
+            currentLatLng = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+        }
+
         return currentLatLng
     }
 
