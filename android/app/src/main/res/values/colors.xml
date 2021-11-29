@@ -12,4 +12,5 @@
     <color name="GRAY">#555758</color>
     <color name="BGGRAY">#F3F3F3</color>
     <color name="LGRAY">#CCCCCC</color>
+    <color name="background_brown">#6B5050</color>
 </resources>
