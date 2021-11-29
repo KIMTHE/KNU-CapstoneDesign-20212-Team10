@@ -36,10 +36,25 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:layout_marginTop="5dp"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/just_txt_cafe_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@id/text_cafe_name"
+                android:layout_alignBottom="@id/text_cafe_name"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginRight="20dp"
+                android:gravity="center"
+                android:text="카페 이름" />
+
+            <TextView
+                android:background="@drawable/border_round_stroke"
+                android:layout_toRightOf="@id/just_txt_cafe_name"
                 android:id="@+id/text_cafe_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"
@@ -48,11 +63,25 @@
                 tools:text="경대커피" />
 
             <TextView
-                android:id="@+id/text_cafe_address"
-                android:layout_below="@id/text_cafe_name"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@id/just_txt_cafe_name"
+                android:gravity="center"
+                android:layout_marginRight="20dp"
+                android:layout_alignTop="@id/text_cafe_address"
+                android:layout_alignBottom="@id/text_cafe_address"
+                android:id="@+id/just_txt_cafe_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="카페 주소" />
+
+            <TextView
+                android:id="@+id/text_cafe_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/text_cafe_name"
                 android:layout_marginTop="10dp"
+                android:layout_toRightOf="@id/just_txt_cafe_address"
+                android:background="@drawable/border_round_stroke"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/text_cafe_name"
                 tools:text="대구광역시 북구 산격동" />
