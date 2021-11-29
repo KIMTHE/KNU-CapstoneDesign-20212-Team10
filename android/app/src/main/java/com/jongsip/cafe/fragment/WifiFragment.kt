@@ -398,10 +398,10 @@ class WifiFragment : Fragment() {
             val ssid: String = info.ssid
             if (ssid == "<unknown ssid>") {
                 textWifiStatus.text = getString(R.string.text_not_connect)
-                imgWifi.setImageResource(R.drawable.ic_baseline_wifi_off_24)
+                imgWifi.setImageResource(R.drawable.no_wifi)
             } else {
                 textWifiStatus.text = getString(R.string.text_wifi_connect, ssid)
-                imgWifi.setImageResource(R.drawable.ic_baseline_wifi_24)
+                imgWifi.setImageResource(R.drawable.wifi)
                 //Log.d(TAG, "getWifiSSID: $ssid")
 
                 return ssid
@@ -409,7 +409,7 @@ class WifiFragment : Fragment() {
         } else {
             //Log.d(TAG, "getWifiSSID: could not obtain the wifi name")
             textWifiStatus.text = getString(R.string.text_not_connect)
-            imgWifi.setImageResource(R.drawable.ic_baseline_wifi_off_24)
+            imgWifi.setImageResource(R.drawable.no_wifi)
         }
         return null
     }

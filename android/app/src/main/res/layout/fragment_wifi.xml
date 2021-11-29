@@ -7,12 +7,31 @@
     android:gravity="center"
     tools:context=".fragment.WifiFragment">
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:weightSum="10"
         android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@color/background_brown"
+            android:clipToOutline="true"
+            android:elevation="4dp">
+
+            <TextView
+                android:layout_width="161dp"
+                android:layout_height="30dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="17dp"
+                android:gravity="center_vertical"
+                android:lineSpacingExtra="4sp"
+                android:text="WIFI 연결하기"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="2"
-                android:src="@drawable/ic_baseline_wifi_24" />
+                 />
 
             <TextView
                 android:id="@+id/text_wifi_status"
@@ -54,10 +73,11 @@
                 android:layout_width="147dp"
                 android:layout_height="147dp"
                 android:layout_gravity="center"
-                android:background="@drawable/circle_button"
+                android:background="@android:color/transparent"
                 android:gravity="center_horizontal"
                 android:padding="0dp"
-                android:src="@drawable/ic_baseline_camera_alt_24"
+                android:scaleType="fitCenter"
+                android:src="@drawable/smartphone_scan"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
