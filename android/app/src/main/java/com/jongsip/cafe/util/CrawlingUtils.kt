@@ -19,7 +19,7 @@ object CrawlingUtils {
         val str = doc.toString().split("<body>")[1].split("</body>")[0].trim()
 
         if(str.contains("\"menuInfo\":")){
-            val menuInfoStr = str.split("\"menuInfo\":")[1].split("]")[0].trim()+"]}"
+            val menuInfoStr = str.split("\"menuInfo\":")[1].split("}]")[0].trim()+"}]}"
 
             val jsonObject = JSONObject(menuInfoStr)
             val jsonMenuArray = jsonObject.getJSONArray("menuList")

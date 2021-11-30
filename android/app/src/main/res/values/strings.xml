@@ -21,4 +21,6 @@
     <string name="setting_text">설정</string>
 
     <string name="item_cafe_price_text">%s 원</string>
+    <string name="item_price_text">메뉴가격</string>
+    <string name="item_name_text">메뉴이름</string>
 </resources>
