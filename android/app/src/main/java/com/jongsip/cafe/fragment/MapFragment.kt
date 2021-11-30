@@ -144,13 +144,14 @@ class MapFragment : Fragment() {
             val locationProvider = LocationManager.GPS_PROVIDER
             locationManager.getLastKnownLocation(locationProvider)
         }else{
-            getLatLng()
+            val locationProvider = LocationManager.NETWORK_PROVIDER
+            locationManager.getLastKnownLocation(locationProvider)
         }
 
         if(currentLatLng == null){
             currentLatLng = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
         }
-
+        Log.d("디버깅", "위치:" + currentLatLng)
         return currentLatLng
     }
 
