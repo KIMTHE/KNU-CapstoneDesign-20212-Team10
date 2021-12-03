@@ -161,7 +161,7 @@ class MapFragment : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(KakaoAPI::class.java)   // 통신 인터페이스를 객체로 생성
-        val call = api.getSearchKeyword(API_KEY, keyword,longitude.toString(), latitude.toString(), 20000, "distance")   // 검색 조건 입력
+        val call = api.getSearchKeyword(API_KEY, keyword, "CE7", longitude.toString(), latitude.toString(), 20000, "distance")   // 검색 조건 입력
 
         // API 서버에 요청
         call.enqueue(object: Callback<ResultSearchKeyword> {

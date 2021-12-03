@@ -9,6 +9,7 @@ interface KakaoAPI {
     fun getSearchKeyword(
         @Header("Authorization") key: String,     // 카카오 API 인증키 [필수]
         @Query("query") query: String,           // 검색을 원하는 질의어 [필수]
+        @Query("category_group_code") category_group_code: String,
         @Query("x") x: String,
         @Query("y") y: String,
         @Query("radius") radius: Int,
