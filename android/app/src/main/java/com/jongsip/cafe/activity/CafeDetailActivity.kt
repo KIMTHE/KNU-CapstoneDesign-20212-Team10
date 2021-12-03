@@ -58,8 +58,7 @@ class CafeDetailActivity : AppCompatActivity() {
         firestore.collection("wifiInfo").document(tempUrl!!).get().addOnSuccessListener {
             tempId = it.data?.get("id").toString()
             tempPw = it.data?.get("pw").toString()
-            Log.d("파이어베이스가져오기", tempId!!)
-            if(tempId != null){
+            if(tempId != "null"){
                 connectWifi.visibility = View.VISIBLE
             }
         }
