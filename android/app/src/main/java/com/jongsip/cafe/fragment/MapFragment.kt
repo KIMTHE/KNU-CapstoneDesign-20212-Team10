@@ -184,7 +184,7 @@ class MapFragment : Fragment() {
 
     // 마커 클릭 말풍선 어댑터
     inner class CustomBalloonAdapter(inflater: LayoutInflater): CalloutBalloonAdapter {
-        private val mCallOutBalloon: View = inflater.inflate(R.layout.balloon_latout, null)
+        private val mCallOutBalloon: View = inflater.inflate(R.layout.balloon_layout, null)
         val name: TextView = mCallOutBalloon.findViewById(R.id.ball_tv_name)
         private val address: TextView = mCallOutBalloon.findViewById(R.id.ball_tv_address)
 
