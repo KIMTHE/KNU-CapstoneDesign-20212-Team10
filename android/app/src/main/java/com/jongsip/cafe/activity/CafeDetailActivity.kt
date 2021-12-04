@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.google.api.Distribution
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -21,6 +22,7 @@ class CafeDetailActivity : AppCompatActivity() {
     lateinit var textCafeAddress: TextView
     lateinit var listCafeMenu: ListView
     lateinit var connectWifi: Button
+    lateinit var layoutNotFound: LinearLayout
 
     lateinit var firestore: FirebaseFirestore
 
@@ -45,6 +47,7 @@ class CafeDetailActivity : AppCompatActivity() {
         textCafeAddress = findViewById(R.id.text_cafe_address)
         listCafeMenu = findViewById(R.id.list_cafe_menu)
         connectWifi = findViewById(R.id.connect_wifi)
+        layoutNotFound = findViewById(R.id.layout_not_found)
 
         textCafeName.text = intent.getStringExtra("placeName")
         textCafeAddress.text = intent.getStringExtra("addressName")
@@ -73,6 +76,7 @@ class CafeDetailActivity : AppCompatActivity() {
 
             this@CafeDetailActivity.runOnUiThread {
                 if (menuInfo != null) {
+                    layoutNotFound.visibility = View.INVISIBLE
                     listCafeMenu.adapter = CafeMenuAdapter(context, menuInfo!!)
                 }
             }

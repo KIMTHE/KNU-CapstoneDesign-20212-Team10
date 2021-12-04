@@ -31,7 +31,7 @@ class SettingFragment : Fragment() {
         //앱 평가하기 텍스트를 눌렀을 때
         goPlayStore.setOnClickListener {
             var intent : Intent = Intent(Intent(Intent.ACTION_VIEW))
-            intent.setData(Uri.parse("market://details?id=" + "com.kakao.talk")) //com.kakao.talk 부분에 패키지 이름으로 변경 후 출시하면 동작가능
+            intent.data = Uri.parse("market://details?id=" + "com.jongsip.cafe") //com.kakao.talk 부분에 패키지 이름으로 변경 후 출시하면 동작가능
             context?.startActivity(intent)
         }
 
@@ -39,8 +39,8 @@ class SettingFragment : Fragment() {
         //문의사항 텍스트를 눌렀을 때
         emailAddress.setOnClickListener {
             val clipboardManager : ClipboardManager = context?.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-            val clipData = ClipData.newPlainText("strName","jongsip@gmail.com")
-            clipboardManager?.setPrimaryClip(clipData)
+            val clipData = ClipData.newPlainText("strName","teamjongsip@gmail.com")
+            clipboardManager.setPrimaryClip(clipData)
 
             Toast.makeText(context, "이메일 주소가 복사됐습니다", Toast.LENGTH_SHORT).show()
         }

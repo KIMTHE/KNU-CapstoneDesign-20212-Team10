@@ -48,7 +48,7 @@
             android:layout_marginBottom="10dp"
             android:gravity="center"
             android:padding="5dp"
-            android:text="이 훌륭한 기능들을 사용할 준비가 되셨나요?"
+            android:text="@string/intro_text"
             android:textSize="11sp" />
 
         <Button
@@ -58,7 +58,7 @@
             android:layout_marginBottom="15dp"
             android:background="@drawable/rounded_button"
             android:gravity="center"
-            android:text="카페 어디가?"
+            android:text="주변카페 찾아보기"
             android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold" />

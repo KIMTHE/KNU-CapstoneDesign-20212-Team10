@@ -23,4 +23,12 @@
     <string name="item_cafe_price_text">%s 원</string>
     <string name="item_price_text">메뉴가격</string>
     <string name="item_name_text">메뉴이름</string>
+    <string name="intro1_text">오늘은 어떤 카페를 갈까요?</string>
+    <string name="intro2_text">지도로 카페를 찾아보세요</string>
+    <string name="intro3_text">카페 wifi를 쉽게 연결해보세요</string>
+    <string name="intro_text">이 훌륭한 기능들을 사용할 준비가 되셨나요?</string>
+    <string name="cafe_info_text">카페 정보</string>
+    <string name="name_text">이름</string>
+    <string name="address_text">주소</string>
+    <string name="wifi_connect_text">WIFI 연결하기</string>
 </resources>
