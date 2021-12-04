@@ -13,6 +13,7 @@
         android:layout_above="@id/bottom_navi" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:theme="@style/Widget.BottomNavigationView"
         android:id="@+id/bottom_navi"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
