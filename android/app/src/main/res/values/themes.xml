@@ -15,9 +15,10 @@
         <!-- Customize your theme here. -->
         <item name = "windowNoTitle">true</item>
         <item name="colorPrimaryDark">@color/statusbar_brown</item>
-    </style>
-
-    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash</item>
+        <item name="android:textViewStyle">@style/customTextViewFontStyle</item>
+        <item name="android:buttonStyle">@style/customButtonFontStyle</item>
+        <item name="android:editTextStyle">@style/customEditTextFontStyle</item>
+        <item name="android:radioButtonStyle">@style/customRadioButtonFontStyle</item>
+        <item name="android:checkboxStyle">@style/customCheckboxFontStyle</item>
     </style>
 </resources>
