@@ -132,7 +132,10 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:src="@drawable/location"
+        android:backgroundTint="@color/light_brown"
+        app:tint="@null"
         app:fabSize="mini"
+        app:maxImageSize="35dp"
         android:layout_gravity="bottom"/>
 
 </FrameLayout>
