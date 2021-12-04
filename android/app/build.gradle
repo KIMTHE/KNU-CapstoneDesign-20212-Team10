@@ -4,6 +4,10 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
+// 선언 및 키값을 불러옴
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
 android {
     compileSdkVersion 31
     defaultConfig {
@@ -14,6 +18,11 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "google_vision_api_key", properties['google_vision_api_key']
+        // 프로젝트 내에서 언제든지 사용이 가능한 변수들이다.
+        // 타입 - 키 - 값으로 저장된다.
+
     }
 
     buildTypes {
@@ -31,7 +40,6 @@ android {
     }
 
 }
-
 
 
 dependencies {

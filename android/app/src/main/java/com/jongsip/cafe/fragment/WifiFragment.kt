@@ -34,6 +34,7 @@ import com.google.api.services.vision.v1.VisionRequestInitializer
 import com.google.api.services.vision.v1.model.*
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
+import com.jongsip.cafe.BuildConfig
 import com.jongsip.cafe.activity.MainActivity
 import com.jongsip.cafe.R
 import com.jongsip.cafe.model.wifiIdPw
@@ -319,7 +320,7 @@ class WifiFragment : Fragment() {
 
     //정적 property, method
     companion object {
-        private const val CLOUD_VISION_API_KEY = "AIzaSyADg5z34EPSdRj4lbgYxS9FEU3ExQQfSfc"
+        private const val CLOUD_VISION_API_KEY = BuildConfig.google_vision_api_key
         private const val ANDROID_CERT_HEADER = "X-Android-Cert"
         private const val ANDROID_PACKAGE_HEADER = "X-Android-Package"
         private const val MAX_LABEL_RESULTS = 10
