@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:orientation="vertical">
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager_intro"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        tools:ignore="MissingConstraints" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:background="@color/light_beige"
+        android:gravity="center|top"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|top"
+            android:layout_marginBottom="10dp"
+            android:gravity="center|top"
+            android:orientation="vertical">
+
+            <com.merhold.extensiblepageindicator.ExtensiblePageIndicator
+                android:id="@+id/flexibleIndicator"
+                android:layout_width="150dp"
+                android:layout_height="15dp"
+                android:layout_marginEnd="10dp"
+                app:indicatorActiveColor="@color/dark_brown"
+                app:indicatorInactiveColor="@color/light_brown"
+                app:indicatorPadding="10dp"
+                app:indicatorRadius="6dp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="이 훌륭한 기능들을 사용할 준비가 되셨나요?"
+            android:textSize="11sp" />
+
+        <Button
+            android:id="@+id/btn_start_main"
+            android:layout_width="250dp"
+            android:layout_height="38dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/rounded_button"
+            android:gravity="center"
+            android:text="카페 어디가?"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/lvl_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="made by team JONGSIP"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

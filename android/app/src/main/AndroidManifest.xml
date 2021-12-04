@@ -21,12 +21,12 @@
         <meta-data android:name="com.kakao.sdk.AppKey" android:value="15769c778dc53fb2c1c2c201ef65e423"/>
 
         <activity android:name=".activity.CafeDetailActivity" />
+        <activity android:name=".activity.MainActivity"/>
         <activity
-            android:name=".activity.MainActivity"
+            android:name=".activity.IntroActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
