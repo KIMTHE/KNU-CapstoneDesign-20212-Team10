@@ -12,7 +12,8 @@
     <color name="GRAY">#555758</color>
     <color name="BGGRAY">#F3F3F3</color>
     <color name="LGRAY">#CCCCCC</color>
-    <color name="background_brown">#6B5050</color>
-    <color name="statusbar_brown">#3E2E2E</color>
+    <color name="light_beige">#FFFCF8</color>
+    <color name="light_brown">#6B5050</color>
+    <color name="dark_brown">#3E2E2E</color>
     <color name="text_black">#343C44</color>
 </resources>

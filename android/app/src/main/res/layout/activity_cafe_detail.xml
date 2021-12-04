@@ -4,9 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/light_beige"
     android:fillViewport="true">
 
     <LinearLayout
+        android:background="@color/light_beige"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -14,7 +16,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="@color/background_brown"
+            android:background="@color/light_brown"
             android:clipToOutline="true"
             android:elevation="4dp">
 
@@ -33,6 +35,7 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:background="@color/light_beige"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -92,7 +95,7 @@
                 android:textStyle="normal"
                 tools:text="대구광역시 북구 산격동" />
 
-            <androidx.appcompat.widget.AppCompatButton
+            <Button
                 android:id="@+id/connect_wifi"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
@@ -100,12 +103,12 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginRight="10dp"
                 android:background="@drawable/border_round_stroke"
+                android:textColor="@color/white"
                 android:text="WIFI 연결하기" />
         </RelativeLayout>
 
-
-
         <ListView
+            android:background="@color/light_beige"
             android:id="@+id/list_cafe_menu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

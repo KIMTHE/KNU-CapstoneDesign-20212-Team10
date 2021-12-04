@@ -7,20 +7,21 @@
     tools:context=".activity.MainActivity">
 
     <FrameLayout
+        android:background="@color/light_beige"
         android:id="@+id/fragment_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_navi" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:theme="@style/Widget.BottomNavigationView"
         android:id="@+id/bottom_navi"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:background="@color/light_beige"
+        android:theme="@style/Widget.BottomNavigationView"
         app:labelVisibilityMode="labeled"
-        android:background="#fff"
         app:menu="@menu/menu" />
 
 </RelativeLayout>

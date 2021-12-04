@@ -8,6 +8,7 @@
     tools:context=".fragment.WifiFragment">
 
     <LinearLayout
+        android:background="@color/light_beige"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:weightSum="10"
@@ -16,7 +17,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="@color/background_brown"
+            android:background="@color/light_brown"
             android:clipToOutline="true"
             android:elevation="4dp">
 
@@ -30,8 +31,8 @@
                 android:lineSpacingExtra="4sp"
                 android:text="WIFI 연결하기"
                 android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:textStyle="bold" />
         </RelativeLayout>
 
         <LinearLayout
@@ -41,7 +42,7 @@
             android:layout_weight="5"
             android:weightSum="5"
             android:orientation="vertical"
-            android:background="@drawable/border_round_stroke"
+            android:background="@drawable/border_round_stroke_beige"
             android:layout_margin="10dp">
 
             <ImageView
