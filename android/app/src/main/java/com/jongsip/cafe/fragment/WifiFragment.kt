@@ -1,7 +1,6 @@
 package com.jongsip.cafe.fragment
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.*
 import android.graphics.Bitmap
@@ -22,8 +21,6 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
-import com.google.android.material.internal.ContextUtils
-import com.google.android.material.internal.ContextUtils.getActivity
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.api.client.json.JsonFactory
@@ -33,9 +30,7 @@ import com.google.api.services.vision.v1.VisionRequest
 import com.google.api.services.vision.v1.VisionRequestInitializer
 import com.google.api.services.vision.v1.model.*
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.ktx.Firebase
 import com.jongsip.cafe.BuildConfig
-import com.jongsip.cafe.activity.MainActivity
 import com.jongsip.cafe.R
 import com.jongsip.cafe.model.wifiIdPw
 import com.jongsip.cafe.util.PackageManagerUtils
@@ -59,12 +54,19 @@ class WifiFragment : Fragment() {
     lateinit var checkWifiThread: Timer
     var timeStamp: String? = null
 
-    lateinit var currentCafeName : String
-    lateinit var currentCafeUrl : String
+    lateinit var fireStore: FirebaseFirestore
+    lateinit var dialogBuilder: AlertDialog.Builder
+    lateinit var currentCafeName: String
+    lateinit var currentCafeUrl: String
+
+    var tryId: String? = null
+    var tryPw: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        wifiManager = requireContext().getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager
+        fireStore = FirebaseFirestore.getInstance()
+        wifiManager =
+            requireContext().getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager
         //MainActivity 에서 카페이름, url 정보 가져옴
         currentCafeName = arguments?.getString("currentCafeName").toString()
         currentCafeUrl = arguments?.getString("currentCafeUrl").toString()
@@ -85,12 +87,43 @@ class WifiFragment : Fragment() {
             startCamera()
         }
 
+        dialogBuilder = AlertDialog.Builder(context)
+        dialogBuilder.setTitle(currentCafeName)
+        dialogBuilder.setIcon(R.drawable.cafe_icon)
+        val listener = DialogInterface.OnClickListener { _, p1 ->
+            when (p1) {
+                //맞으면 파이어베이스에 저장
+                DialogInterface.BUTTON_POSITIVE -> {
+                    val temp: String = currentCafeUrl.substring(27)
+                    Log.d("잘린주소 : ", temp)
+                    fireStore.collection("wifiInfo").document(temp).set(wifiIdPw(tryId!!, tryPw!!))
+                }
+            }
+        }
+        dialogBuilder.setPositiveButton("맞아요!", listener)
+        dialogBuilder.setNegativeButton("아니에요..", listener)
+
         return rootView
+    }
+
+    private val broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            Log.d(tag, "onReceive: $tryId, $tryPw")
+            if (!intent.action.equals(WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION)) {
+                return
+            }
+            showToast("연결중...")
+
+            //연결 성공시
+            dialogBuilder.show()
+
+        }
     }
 
     override fun onPause() {
         super.onPause()
         checkWifiThread.cancel()
+        requireContext().unregisterReceiver(broadcastReceiver)
     }
 
     override fun onResume() {
@@ -103,6 +136,10 @@ class WifiFragment : Fragment() {
                 }
             }
         }
+
+        val intentFilter =
+            IntentFilter(WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION)
+        requireContext().registerReceiver(broadcastReceiver, intentFilter)
     }
 
     //카메라 시작
@@ -218,7 +255,8 @@ class WifiFragment : Fragment() {
                 Log.d(TAG, "doInBackground : failed to make API request because " + e.content)
             } catch (e: IOException) {
                 Log.d(
-                    TAG, "doInBackground : failed to make API request because of other IOException " +
+                    TAG,
+                    "doInBackground : failed to make API request because of other IOException " +
                             e.message
                 )
             }
@@ -229,8 +267,7 @@ class WifiFragment : Fragment() {
         override fun onPostExecute(result: String) {
             val fragment = mActivityWeakReference.get()
             if (fragment != null) {
-                var context = activity
-                connectWithOCR(fragment, currentCafeName, currentCafeUrl, context!!)
+                connectWithOCR(fragment)
             }
         }
     }
@@ -323,7 +360,6 @@ class WifiFragment : Fragment() {
         private const val CLOUD_VISION_API_KEY = BuildConfig.google_vision_api_key
         private const val ANDROID_CERT_HEADER = "X-Android-Cert"
         private const val ANDROID_PACKAGE_HEADER = "X-Android-Package"
-        private const val MAX_LABEL_RESULTS = 10
         private const val MAX_DIMENSION = 1200
         val TAG: String = WifiFragment::class.java.simpleName
         const val CAMERA_PERMISSIONS_REQUEST = 2
@@ -346,42 +382,25 @@ class WifiFragment : Fragment() {
         }
 
         //모든 경우로 로그인 시도
-        fun connectWithOCR(wifiFragment: WifiFragment, currentCafeName : String, currentCafeUrl : String, context: Context) {
-
+        fun connectWithOCR(
+            wifiFragment: WifiFragment
+        ) {
             if (WifiLoginUtils.idCase.size == 0 || WifiLoginUtils.pwCase.size == 0)
                 wifiFragment.showToast(wifiFragment.getString(R.string.image_picker_error))
             else {
                 for (id in WifiLoginUtils.idCase) {
                     for (pw in WifiLoginUtils.pwCase) {
+                        if (wifiFragment.getWifiSSID() != null) break
+                        wifiFragment.tryId = id
+                        wifiFragment.tryPw = pw
+
                         wifiFragment.wifiManager!!.disconnect()
                         wifiFragment.connectUsingNetworkSuggestion(ssid = id, password = pw)
                         wifiFragment.wifiManager!!.reconnect()
 
-                        //연결 성공인지 체크
-                       val ssid = wifiFragment.getWifiSSID()
-                        if (ssid != null && ssid == id){
-                            var firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
-                            var temp :String = currentCafeUrl.substring(27)
-                            Log.d("잘린주소 : " , temp)
+                        wifiFragment.dialogBuilder.setMessage("현재 위치하고있는 카페가 맞나요?\nID: $id\nPW: $pw")
+                        wifiFragment.dialogBuilder.show()
 
-                            var builder = AlertDialog.Builder(context)
-                            builder.setTitle(currentCafeName)
-                            builder.setMessage("현재 위치하고있는 카페가 맞나요?")
-                            builder.setIcon(R.drawable.cafe_icon)
-
-                            var listener = DialogInterface.OnClickListener { _, p1 ->
-                                when (p1) {
-                                    DialogInterface.BUTTON_POSITIVE ->//맞으면 파이어베이스에 저장
-                                        firestore.collection("wifiInfo").document(temp).set(wifiIdPw(id, pw))
-                                }
-                            }
-                            builder.setPositiveButton("맞아요!", listener)
-                            builder.setNegativeButton("아니에요", listener)
-
-                            builder.show()
-
-                            break
-                        }
                     }
                 }
             }
@@ -403,12 +422,12 @@ class WifiFragment : Fragment() {
             } else {
                 textWifiStatus.text = getString(R.string.text_wifi_connect, ssid)
                 imgWifi.setImageResource(R.drawable.wifi)
-                //Log.d(TAG, "getWifiSSID: $ssid")
+                Log.d(TAG, "getWifiSSID: $ssid")
 
                 return ssid
             }
         } else {
-            //Log.d(TAG, "getWifiSSID: could not obtain the wifi name")
+            Log.d(TAG, "getWifiSSID: could not obtain the wifi name")
             textWifiStatus.text = getString(R.string.text_not_connect)
             imgWifi.setImageResource(R.drawable.no_wifi)
         }
@@ -422,20 +441,6 @@ class WifiFragment : Fragment() {
             .setSsid(ssid)
             .setWpa2Passphrase(password)
             .build()
-
-        val intentFilter =
-            IntentFilter(WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION);
-
-        val broadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                if (!intent.action.equals(WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION)) {
-                    return
-                }
-                showToast("연결중...")
-            }
-        }
-
-        requireActivity().registerReceiver(broadcastReceiver, intentFilter)
 
         lastSuggestedNetwork?.let {
             val status = wifiManager!!.removeNetworkSuggestions(listOf(it))
@@ -454,7 +459,7 @@ class WifiFragment : Fragment() {
 
         if (status == WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
             lastSuggestedNetwork = wifiNetworkSuggestion
-            showToast("연결성공")
+            showToast("제안성공")
         }
     }
 
