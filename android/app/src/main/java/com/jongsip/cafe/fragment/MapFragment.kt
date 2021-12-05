@@ -1,4 +1,5 @@
 package com.jongsip.cafe.fragment
+
 import KakaoAPI
 import android.Manifest
 import android.content.Context
@@ -13,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jongsip.cafe.R
@@ -33,17 +35,17 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MapFragment : Fragment() {
     lateinit var btnMoveHere: FloatingActionButton
-    private lateinit var mapView : MapView
-    private lateinit var locationManager : LocationManager
+    private lateinit var mapView: MapView
+    private lateinit var locationManager: LocationManager
     lateinit var mapViewContainer: ViewGroup
 
     private val eventListener = MarkerEventListener()   // 마커 클릭 이벤트 리스너
     var cafeList = HashMap<String, Place>(45)//카페 장소 정보
 
-    var longitude : Double = 0.0
-    var latitude : Double = 0.0
+    var longitude: Double = 0.0
+    var latitude: Double = 0.0
 
-    lateinit var nowCafeName : String
+    lateinit var nowCafeName: String
 
     companion object {
         const val BASE_URL = "https://dapi.kakao.com/"
@@ -63,7 +65,7 @@ class MapFragment : Fragment() {
         mapView = MapView(activity)
         mapViewContainer = rootView.findViewById(R.id.map_view)
         mapViewContainer.addView(mapView)
-        val cardView =rootView.findViewById(R.id.card_view) as LinearLayout
+        val cardView = rootView.findViewById(R.id.card_view) as LinearLayout
 
         cardView.visibility = View.GONE
 
@@ -71,7 +73,7 @@ class MapFragment : Fragment() {
         mapView.setPOIItemEventListener(eventListener)  // 마커 클릭 이벤트 리스너 등록
 
         btnMoveHere = rootView.findViewById(R.id.btn_move_here)
-        btnMoveHere.setOnClickListener{
+        btnMoveHere.setOnClickListener {
             if (checkLocationService()) {
                 // GPS 가 켜져있을 경우
                 when (PermissionUtils.requestLocationPermission(requireActivity())) {
@@ -90,18 +92,20 @@ class MapFragment : Fragment() {
 
     // GPS 가 켜져있는지 확인
     private fun checkLocationService(): Boolean {
-        val locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationManager =
+            activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
-    private fun getLocation(){
-        locationManager = (activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager?)!!
+    private fun getLocation() {
+        locationManager =
+            (activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager?)!!
         val userLocation: Location? = getLatLng()
-        if(userLocation != null){
+        if (userLocation != null) {
             latitude = userLocation.latitude
             longitude = userLocation.longitude
 
-            val mapPoint : MapPoint = MapPoint.mapPointWithGeoCoord(latitude, longitude)
+            val mapPoint: MapPoint = MapPoint.mapPointWithGeoCoord(latitude, longitude)
             mapView.setMapCenterPoint(mapPoint, true)//맵 이동
             mapView.setZoomLevel(1, true)
             searchKeyword("카페")
@@ -110,12 +114,12 @@ class MapFragment : Fragment() {
 
     //지도에 마커 추가
     private fun addMarker(response: Response<ResultSearchKeyword>) {
-        var mapPoint : MapPoint
-        Log.d("현재 상황", "${response.body()?.documents!!}" )
+        var mapPoint: MapPoint
+        Log.d("현재 상황", "${response.body()?.documents!!}")
 
-        var check : Int = 0
+        var check: Int = 0
         for (item in response.body()?.documents!!) {
-            if(check == 0){//제일 가까운 카페 이름, 해당 웹주소 mainActivty로 보내기
+            if (check == 0) {//제일 가까운 카페 이름, 해당 웹주소 mainActivty로 보내기
                 dataPassListener.onDataPass(item.place_name, item.place_url)
                 check = 1
             }
@@ -134,24 +138,55 @@ class MapFragment : Fragment() {
 
     private fun getLatLng(): Location? {
         var currentLatLng: Location? = null
-        val hasFineLocationPermission = ContextCompat.checkSelfPermission(requireActivity(),
-            Manifest.permission.ACCESS_FINE_LOCATION)
-        val hasCoarseLocationPermission = ContextCompat.checkSelfPermission(requireActivity(),
-            Manifest.permission.ACCESS_COARSE_LOCATION)
+        val hasFineLocationPermission = ContextCompat.checkSelfPermission(
+            requireActivity(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        val hasCoarseLocationPermission = ContextCompat.checkSelfPermission(
+            requireActivity(),
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
 
-        currentLatLng = if(hasFineLocationPermission == PackageManager.PERMISSION_GRANTED &&
-            hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED){
+        currentLatLng = if (hasFineLocationPermission == PackageManager.PERMISSION_GRANTED &&
+            hasCoarseLocationPermission == PackageManager.PERMISSION_GRANTED
+        ) {
+            val locationListener = object : LocationListener {
+                override fun onLocationChanged(location: Location) {
+                    location.let {
+                        val position = LatLng(it.latitude, it.longitude)
+                        Log.e("lat and long", "${position.latitude} and ${position.longitude}")
+                    }
+                }
+
+                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+            }
+
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                10000,
+                1f,
+                locationListener
+            )
+
+            locationManager.requestLocationUpdates(
+                LocationManager.NETWORK_PROVIDER,
+                10000,
+                1f,
+                locationListener
+            )
+
             val locationProvider = LocationManager.GPS_PROVIDER
             locationManager.getLastKnownLocation(locationProvider)
-        }else{
+
+        } else {
             val locationProvider = LocationManager.NETWORK_PROVIDER
             locationManager.getLastKnownLocation(locationProvider)
         }
 
-        if(currentLatLng == null){
+        if (currentLatLng == null) {
             currentLatLng = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
         }
-        Log.d("디버깅", "위치:" + currentLatLng)
+        Log.d("디버깅", "위치:$currentLatLng")
         return currentLatLng
     }
 
@@ -161,10 +196,18 @@ class MapFragment : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val api = retrofit.create(KakaoAPI::class.java)   // 통신 인터페이스를 객체로 생성
-        val call = api.getSearchKeyword(API_KEY, keyword, "CE7", longitude.toString(), latitude.toString(), 20000, "distance")   // 검색 조건 입력
+        val call = api.getSearchKeyword(
+            API_KEY,
+            keyword,
+            "CE7",
+            longitude.toString(),
+            latitude.toString(),
+            20000,
+            "distance"
+        )   // 검색 조건 입력
 
         // API 서버에 요청
-        call.enqueue(object: Callback<ResultSearchKeyword> {
+        call.enqueue(object : Callback<ResultSearchKeyword> {
             override fun onResponse(
                 call: Call<ResultSearchKeyword>,
                 response: Response<ResultSearchKeyword>
@@ -174,6 +217,7 @@ class MapFragment : Fragment() {
                 Log.d("Test", "Body: ${response.body()?.documents}")
                 addMarker(response)
             }
+
             override fun onFailure(call: Call<ResultSearchKeyword>, t: Throwable) {
                 // 통신 실패
                 Log.w("MainActivity", "통신 실패: ${t.message}")
@@ -183,7 +227,7 @@ class MapFragment : Fragment() {
 
 
     // 마커 클릭 말풍선 어댑터
-    inner class CustomBalloonAdapter(inflater: LayoutInflater): CalloutBalloonAdapter {
+    inner class CustomBalloonAdapter(inflater: LayoutInflater) : CalloutBalloonAdapter {
         private val mCallOutBalloon: View = inflater.inflate(R.layout.balloon_layout, null)
         val name: TextView = mCallOutBalloon.findViewById(R.id.ball_tv_name)
         private val address: TextView = mCallOutBalloon.findViewById(R.id.ball_tv_address)
@@ -203,7 +247,7 @@ class MapFragment : Fragment() {
     }
 
     // 마커 클릭 이벤트 리스너
-    inner class MarkerEventListener(): MapView.POIItemEventListener {
+    inner class MarkerEventListener() : MapView.POIItemEventListener {
         override fun onPOIItemSelected(mapView: MapView?, poiItem: MapPOIItem?) {
             // 마커 클릭 시
 
@@ -214,17 +258,25 @@ class MapFragment : Fragment() {
             // 이 함수도 작동하지만 그냥 아래 있는 함수에 작성하자
         }
 
-        override fun onCalloutBalloonOfPOIItemTouched(mapView: MapView?, poiItem: MapPOIItem?, buttonType: MapPOIItem.CalloutBalloonButtonType?) {
+        override fun onCalloutBalloonOfPOIItemTouched(
+            mapView: MapView?,
+            poiItem: MapPOIItem?,
+            buttonType: MapPOIItem.CalloutBalloonButtonType?
+        ) {
             // 말풍선 클릭 시
             Log.d("마커 클릭 시 ", "${poiItem?.itemName}")
             val intent = Intent(activity, CafeDetailActivity::class.java)
-            intent.putExtra("detailUrl",cafeList[poiItem!!.itemName]!!.place_url)
-            intent.putExtra("placeName",poiItem.itemName)
-            intent.putExtra("addressName",cafeList[poiItem.itemName]!!.address_name)
+            intent.putExtra("detailUrl", cafeList[poiItem!!.itemName]!!.place_url)
+            intent.putExtra("placeName", poiItem.itemName)
+            intent.putExtra("addressName", cafeList[poiItem.itemName]!!.address_name)
             startActivity(intent)
         }
 
-        override fun onDraggablePOIItemMoved(mapView: MapView?, poiItem: MapPOIItem?, mapPoint: MapPoint?) {
+        override fun onDraggablePOIItemMoved(
+            mapView: MapView?,
+            poiItem: MapPOIItem?,
+            mapPoint: MapPoint?
+        ) {
             // 마커의 속성 중 isDraggable = true 일 때 마커를 이동시켰을 경우
         }
     }

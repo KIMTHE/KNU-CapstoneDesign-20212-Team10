@@ -120,7 +120,7 @@ class CafeDetailActivity : AppCompatActivity() {
         }
         if (status == WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS) {
             lastSuggestedNetwork = wifiNetworkSuggestion
-            showToast("연결성공")
+            showToast("제안성공")
         }
     }
 
