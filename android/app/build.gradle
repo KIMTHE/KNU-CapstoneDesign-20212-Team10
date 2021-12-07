@@ -14,12 +14,13 @@ android {
         applicationId "com.jongsip.cafe"
         minSdk 29
         targetSdk 31
-        versionCode 2
-        versionName "1.0"
+        versionCode 3
+        versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "google_vision_api_key", properties['google_vision_api_key']
+        buildConfigField "String", "kakao_rest_api_key", properties['kakao_rest_api_key']
         // 프로젝트 내에서 언제든지 사용이 가능한 변수들이다.
         // 타입 - 키 - 값으로 저장된다.
 

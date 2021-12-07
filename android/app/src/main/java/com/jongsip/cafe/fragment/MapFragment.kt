@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.jongsip.cafe.BuildConfig
 import com.jongsip.cafe.R
 import com.jongsip.cafe.activity.CafeDetailActivity
 import com.jongsip.cafe.model.Place
@@ -45,11 +46,9 @@ class MapFragment : Fragment() {
     var longitude: Double = 0.0
     var latitude: Double = 0.0
 
-    lateinit var nowCafeName: String
-
     companion object {
         const val BASE_URL = "https://dapi.kakao.com/"
-        const val API_KEY = "KakaoAK 84a60e48f5913e29b5d156b3a15da41f"  // REST API 키
+        const val API_KEY = BuildConfig.kakao_rest_api_key  // REST API 키
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -157,6 +156,10 @@ class MapFragment : Fragment() {
                         Log.e("lat and long", "${position.latitude} and ${position.longitude}")
                     }
                 }
+
+                override fun onProviderDisabled(provider: String) {}
+
+                override fun onProviderEnabled(provider: String) {}
 
                 override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
             }
