@@ -13,6 +13,7 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Base64
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -357,7 +358,7 @@ class WifiFragment : Fragment() {
 
     //정적 property, method
     companion object {
-        private const val CLOUD_VISION_API_KEY = BuildConfig.google_vision_api_key
+        private var CLOUD_VISION_API_KEY = Base64.decode(BuildConfig.google_vision_api_encoded,Base64.DEFAULT).toString()
         private const val ANDROID_CERT_HEADER = "X-Android-Cert"
         private const val ANDROID_PACKAGE_HEADER = "X-Android-Package"
         private const val MAX_DIMENSION = 1200
